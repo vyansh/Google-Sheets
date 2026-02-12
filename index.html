@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game of Numbers</title>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=IM+Fell+English+SC&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#000000;
+  --panel:#000000;
+  --card:#000000;
+  --text:#ffffff;
+  --sub:#d5d5d5;
+  --muted:#b7b7b7;
+  --line:rgba(255,255,255,.28);
+  --line-strong:rgba(255,255,255,.5);
+  --glass:rgba(255,255,255,.02);
+  --glass-2:rgba(255,255,255,.05);
+  --accent:#ffffff;
+  --good:#86efac;
+  --bad:#fecaca;
+  --radius:16px;
+}
+html[data-theme="light"]{
+  --bg:#f3f3f3;
+  --panel:#f8f8f8;
+  --card:#ffffff;
+  --text:#000000;
+  --sub:#1f1f1f;
+  --muted:#4e4e4e;
+  --line:rgba(0,0,0,.25);
+  --line-strong:rgba(0,0,0,.42);
+  --glass:rgba(0,0,0,.015);
+  --glass-2:rgba(0,0,0,.03);
+  --accent:#000000;
+}
+body{
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  letter-spacing:.01em;
+}
+.page{
+  max-width:1380px;
+  margin:24px auto;
+  padding:16px;
+  border:2px solid var(--line-strong);
+  border-radius:18px;
+  background:var(--panel);
+  position:relative;
+}
+.page::before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:82px;
+  border-top:1px solid var(--line);
+}
+header{
+  position:sticky;
+  top:8px;
+  z-index:40;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:8px 4px 14px;
+  margin-bottom:12px;
+  background:transparent;
+}
+.window-dots{display:flex;gap:7px;align-items:center;padding-left:2px;}
+.window-dots span{
+  width:9px;height:9px;border-radius:50%;
+  border:1px solid var(--line-strong);display:block;
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;padding-left:6px;}
+.brand-badge{
+  width:44px;height:44px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;gap:1px;
+  border:1px solid var(--line-strong);
+  font-weight:700;
+  background:transparent;
+  position:relative;
+}
+.brand-badge .skull{
+  font-size:14px;line-height:1;transform:translateY(-1px);
+}
+.brand-badge .digit{
+  font-family:"IM Fell English SC","Cinzel Decorative",serif;
+  font-size:18px;line-height:1;
+}
+.brand h1{
+  font-family:"Cinzel Decorative","IM Fell English SC",serif;
+  font-size:1.24rem;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  background:var(--panel);
+  padding:0 6px;
+  position:relative;
+  z-index:2;
+}
+.head-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;min-width:0;}
+.stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.stat{
+  padding:7px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--glass);
+  font-size:.78rem;
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+.stat strong{font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text);}
+
+.lamp-toggle{
+  position:relative;
+  border:1px solid var(--line-strong);
+  cursor:pointer;
+  width:62px;
+  height:36px;
+  border-radius:999px;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  padding:3px;
+}
+.lamp-knob{
+  width:28px;height:28px;border-radius:50%;
+  position:relative;
+  transition:transform .24s ease;
+  border:1px solid var(--line-strong);
+  background:var(--card);
+}
+.lamp-knob::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:4px;
+  transform:translateX(-50%);
+  width:10px;height:10px;border-radius:6px 6px 3px 3px;
+  border:1px solid var(--line);
+}
+.lamp-knob::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:15px;
+  transform:translateX(-50%);
+  width:12px;height:7px;border-radius:5px;
+  border:1px solid var(--line);
+}
+html[data-theme="light"] .lamp-knob{transform:translateX(27px);}
+
+main{display:grid;gap:14px;padding-top:8px;}
+.progress{height:3px;border-radius:999px;overflow:hidden;background:var(--line);}
+.progress > div{height:100%;width:0;background:var(--text);transition:width .25s ease;}
+
+.controls{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(220px,360px) auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--glass);
+}
+.search{min-width:0;}
+.filters{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--sub);
+  border-radius:999px;
+  padding:7px 12px;
+  cursor:pointer;
+  font-weight:500;
+  font-size:.8rem;
+}
+.pill.active{
+  color:var(--text);
+  background:var(--glass-2);
+  border-color:var(--line-strong);
+}
+.search input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  outline:none;
+}
+.btn-ref{
+  border:1px solid var(--line-strong);
+  background:transparent;
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.q-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  align-items:start;
+}
+.q-card{
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.q-card.correct{border-color:rgba(134,239,172,.45);}
+.q-card.wrong{border-color:rgba(254,202,202,.5);}
+.card-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+}
+.q-num{
+  min-width:56px;
+  text-align:center;
+  padding:5px 9px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:.78rem;
+  border:1px solid var(--line);
+}
+.q-status{flex:1;min-width:90px;font-size:.8rem;color:var(--muted);}
+.diff{
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-weight:700;
+  padding:5px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+}
+.diff.easy,.diff.medium,.diff.hard,.diff.expert{color:var(--sub);}
+.card-body{padding:14px;}
+.scenario{line-height:1.58;color:var(--sub);font-size:.9rem;}
+
+.sheet-wrap{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:transparent;}
+.sheet-head{
+  padding:7px 10px;
+  font-size:.75rem;
+  color:var(--muted);
+  border-bottom:1px solid var(--line);
+  background:var(--glass);
+}
+.sheet-scroll{overflow:auto;max-height:240px;}
+table{width:100%;border-collapse:collapse;font-size:.81rem;min-width:400px;}
+thead{position:sticky;top:0;z-index:2;}
+th,td{border:1px solid var(--line);padding:8px 10px;}
+th{background:var(--glass);font-weight:600;white-space:nowrap;}
+th.col-header{text-align:center;color:var(--text);}
+td{white-space:nowrap;}
+td.row-num{text-align:center;font-size:.76rem;color:var(--muted);background:var(--glass);}
+td[data-qid]{cursor:pointer;}
+td[data-qid]:hover{background:var(--glass-2);}
+.cell-selected{outline:2px solid var(--line-strong);outline-offset:-2px;background:var(--glass-2);}
+
+.formula-wrap{margin-top:12px;position:relative;}
+.formula-bar{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:transparent;}
+.formula-top{display:flex;align-items:center;min-width:0;}
+.refbox,.fx{
+  padding:9px 10px;
+  border-right:1px solid var(--line);
+  font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.refbox{min-width:60px;text-align:center;color:var(--text);background:var(--glass);}
+.fx{font-style:italic;color:var(--muted);}
+.formula-input{
+  flex:1;
+  min-width:0;
+  padding:10px 12px;
+  border:none;
+  background:transparent;
+  color:var(--text);
+  outline:none;
+  font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.formula-input::placeholder{color:var(--muted);}
+
+.ac-drop{
+  position:absolute;
+  left:0;right:0;top:calc(100% + 6px);
+  z-index:30;
+  max-height:230px;
+  overflow:auto;
+  border-radius:12px;
+  border:1px solid var(--line-strong);
+  background:var(--panel);
+  display:none;
+}
+.ac-drop.open{display:block;}
+.ac-item{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:8px;
+  padding:9px 10px;
+  cursor:pointer;
+  border-bottom:1px solid var(--line);
+}
+.ac-item:last-child{border-bottom:none;}
+.ac-item.sel,.ac-item:hover{background:var(--glass);}
+.ac-name{
+  font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--text);
+  font-weight:700;
+}
+.ac-desc{font-size:.76rem;color:var(--sub);}
+
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.btn{
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  padding:9px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+.btn-check{border-color:var(--line-strong);}
+.hint-box,.feedback{
+  display:none;
+  margin-top:10px;
+  padding:11px;
+  border-radius:10px;
+  font-size:.84rem;
+  line-height:1.45;
+  border:1px solid var(--line);
+}
+.hint-box.show,.feedback.show{display:block;}
+.hint-box{background:var(--glass);}
+.feedback.ok{background:rgba(134,239,172,.08);color:var(--good);border-color:rgba(134,239,172,.3);}
+.feedback.no{background:rgba(254,202,202,.08);color:var(--bad);border-color:rgba(254,202,202,.34);}
+.feedback code{background:var(--glass);padding:1px 6px;border-radius:6px;}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:120;}
+.modal-bg.open{display:flex;}
+.modal{
+  width:min(900px,100%);
+  max-height:92vh;
+  display:flex;
+  flex-direction:column;
+  border:1px solid var(--line-strong);
+  border-radius:20px;
+  background:var(--panel);
+  overflow:hidden;
+}
+.modal-head,.modal-search{
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.modal-head h2{font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;}
+.modal-close{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+}
+.modal-search input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+}
+.modal-body{overflow:auto;padding:14px 16px 16px;}
+.ref-section{margin-bottom:18px;}
+.ref-section h3{
+  font-size:.74rem;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--sub);
+  margin-bottom:8px;
+}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.ref-item{border:1px solid var(--line);border-radius:10px;padding:9px;background:var(--glass);}
+.ref-item-name{font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text);font-weight:700;font-size:.84rem;}
+.ref-item-desc{color:var(--sub);font-size:.78rem;margin-top:3px;}
+.ref-item-syn{color:var(--muted);font-size:.73rem;margin-top:5px;font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;}
+
+.toast{
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  display:none;
+  padding:10px 13px;
+  border-radius:10px;
+  background:var(--panel);
+  border:1px solid var(--line-strong);
+  color:var(--text);
+  z-index:150;
+}
+.toast.show{display:block;}
+
+@media (hover:hover) and (pointer:fine){
+  html,body,button,input,textarea,select,a,[role="button"],.pill,.btn,.btn-ref,td[data-qid]{cursor:none !important;}
+  .cursor-invert{
+    position:fixed;
+    left:0;
+    top:0;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#fff;
+    mix-blend-mode:difference;
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    z-index:9999;
+    opacity:0;
+    transition:width .12s ease,height .12s ease,opacity .12s ease;
+  }
+  .cursor-invert.show{opacity:1;}
+  .cursor-invert.press{width:12px;height:12px;}
+}
+
+@media (max-width:1040px){
+  .controls{grid-template-columns:1fr 1fr;}
+  .btn-ref{grid-column:1/-1;justify-self:start;}
+}
+@media (max-width:1240px){
+  .q-grid{grid-template-columns:1fr;}
+}
+@media (max-width:720px){
+  .page{margin:10px;padding:10px;}
+  .page::before{top:28px;}
+  header{position:static;flex-direction:column;align-items:stretch;}
+  .head-right{justify-content:space-between;}
+  .stats{width:100%;}
+  .stat{flex:1;justify-content:center;min-width:120px;}
+  .controls{grid-template-columns:1fr;}
+  .ac-item{grid-template-columns:1fr;gap:3px;}
+  .formula-top{flex-wrap:wrap;}
+  .refbox,.fx{border-bottom:1px solid var(--line);}
+  .formula-input{width:100%;}
+  .cursor-invert{display:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="window-dots"><span></span><span></span><span></span></div>
+    <div class="brand">
+      <div class="brand-badge" aria-label="Pirate Number Logo"><span class="skull">☠</span><span class="digit">7</span></div>
+      <h1>Game of Numbers</h1>
+    </div>
+    <div class="head-right">
+      <div class="stats">
+        <div class="stat"><strong id="s-total">0</strong><span>Questions</span></div>
+        <div class="stat"><strong id="s-done">0</strong><span>Attempted</span></div>
+        <div class="stat"><strong id="s-correct">0</strong><span>Correct</span></div>
+        <div class="stat"><strong id="s-pct">—</strong><span>Accuracy</span></div>
+      </div>
+      <button class="lamp-toggle" id="themeToggle" title="Toggle light/dark theme" aria-label="Toggle light and dark mode">
+        <span class="lamp-knob"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="progress"><div id="prog"></div></div>
+    <section class="controls">
+      <div class="filters" id="filters">
+        <button class="pill active" data-f="all">All</button>
+        <button class="pill" data-f="easy">Easy</button>
+        <button class="pill" data-f="medium">Medium</button>
+        <button class="pill" data-f="hard">Hard</button>
+        <button class="pill" data-f="expert">Expert</button>
+      </div>
+      <div class="search"><input id="search" type="text" placeholder="Search questions..."></div>
+      <button class="btn-ref" onclick="openRef()">Formula Reference</button>
+    </section>
+
+    <section class="q-grid" id="qgrid"></section>
+  </main>
+</div>
+
+<div class="modal-bg" id="refModal" onclick="if(event.target===this)closeRef()">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Formula Reference</h2>
+      <button class="modal-close" onclick="closeRef()">✕</button>
+    </div>
+    <div class="modal-search"><input id="refSearch" type="text" placeholder="Search formulas" oninput="filterRef()"></div>
+    <div class="modal-body" id="refBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="cursor-invert" id="cursorInvert"></div>
+
+<script>
+const ALL_FORMULAS=[
+  {n:"SUM",d:"Add values",s:"SUM(value1, value2, ...)",c:"Math"},
+  {n:"SUMIF",d:"Conditional sum",s:"SUMIF(range, criterion, sum_range)",c:"Math"},
+  {n:"SUMIFS",d:"Multi-condition sum",s:"SUMIFS(sum_range, range1, criterion1, ...)",c:"Math"},
+  {n:"SUMPRODUCT",d:"Sum of products",s:"SUMPRODUCT(array1, array2, ...)",c:"Math"},
+  {n:"AVERAGE",d:"Average",s:"AVERAGE(value1, value2, ...)",c:"Statistical"},
+  {n:"AVERAGEIF",d:"Conditional average",s:"AVERAGEIF(range, criterion, average_range)",c:"Statistical"},
+  {n:"AVERAGEIFS",d:"Multi-condition average",s:"AVERAGEIFS(avg_range, range1, criterion1, ...)",c:"Statistical"},
+  {n:"COUNTIF",d:"Conditional count",s:"COUNTIF(range, criterion)",c:"Statistical"},
+  {n:"COUNTIFS",d:"Multi-condition count",s:"COUNTIFS(range1, criterion1, ...)",c:"Statistical"},
+  {n:"COUNTA",d:"Count non-empty",s:"COUNTA(value1, value2, ...)",c:"Statistical"},
+  {n:"IF",d:"Conditional",s:"IF(condition, true_value, false_value)",c:"Logical"},
+  {n:"IFS",d:"Multiple conditions",s:"IFS(cond1, val1, cond2, val2, ...)",c:"Logical"},
+  {n:"AND",d:"All true",s:"AND(logical1, logical2, ...)",c:"Logical"},
+  {n:"OR",d:"Any true",s:"OR(logical1, logical2, ...)",c:"Logical"},
+  {n:"IFERROR",d:"Return fallback on error",s:"IFERROR(value, fallback)",c:"Logical"},
+  {n:"SWITCH",d:"Switch by cases",s:"SWITCH(expression, case1, value1, ..., default)",c:"Logical"},
+  {n:"INDEX",d:"Value at position",s:"INDEX(reference, row, [column])",c:"Lookup"},
+  {n:"MATCH",d:"Position of match",s:"MATCH(search_key, range, [search_type])",c:"Lookup"},
+  {n:"VLOOKUP",d:"Vertical lookup",s:"VLOOKUP(search_key, range, index, [is_sorted])",c:"Lookup"},
+  {n:"XLOOKUP",d:"Flexible lookup",s:"XLOOKUP(search_key, lookup_range, result_range, [missing])",c:"Lookup"},
+  {n:"FILTER",d:"Filter rows",s:"FILTER(range, condition1, [condition2, ...])",c:"Lookup"},
+  {n:"UNIQUE",d:"Distinct values",s:"UNIQUE(range)",c:"Lookup"},
+  {n:"SORT",d:"Sort range",s:"SORT(range, sort_column, is_ascending)",c:"Lookup"},
+  {n:"SEQUENCE",d:"Generate number sequence",s:"SEQUENCE(rows, [columns], [start], [step])",c:"Lookup"},
+  {n:"ARRAYFORMULA",d:"Array-enabled formula",s:"ARRAYFORMULA(expression)",c:"Lookup"},
+  {n:"QUERY",d:"SQL-style query",s:"QUERY(data, query, [headers])",c:"Google Sheets"},
+  {n:"LEFT",d:"Left characters",s:"LEFT(text, [num_chars])",c:"Text"},
+  {n:"RIGHT",d:"Right characters",s:"RIGHT(text, [num_chars])",c:"Text"},
+  {n:"MID",d:"Middle characters",s:"MID(text, start, length)",c:"Text"},
+  {n:"LEN",d:"Text length",s:"LEN(text)",c:"Text"},
+  {n:"TRIM",d:"Trim spaces",s:"TRIM(text)",c:"Text"},
+  {n:"FIND",d:"Find (case-sensitive)",s:"FIND(search_for, text_to_search, [starting_at])",c:"Text"},
+  {n:"SEARCH",d:"Find (case-insensitive)",s:"SEARCH(search_for, text_to_search, [starting_at])",c:"Text"},
+  {n:"TEXTJOIN",d:"Join text from range",s:"TEXTJOIN(delimiter, ignore_empty, text1, ...)",c:"Text"},
+  {n:"JOIN",d:"Join with delimiter",s:"JOIN(delimiter, value_or_array1, ...)",c:"Text"},
+  {n:"CONCATENATE",d:"Concatenate values",s:"CONCATENATE(value1, value2, ...)",c:"Text"},
+  {n:"TEXT",d:"Format value",s:"TEXT(value, format)",c:"Text"},
+  {n:"TEXTBEFORE",d:"Text before delimiter",s:"TEXTBEFORE(text, delimiter)",c:"Text"},
+  {n:"TEXTAFTER",d:"Text after delimiter",s:"TEXTAFTER(text, delimiter)",c:"Text"},
+  {n:"REGEXEXTRACT",d:"Extract via regex",s:"REGEXEXTRACT(text, regular_expression)",c:"Text"},
+  {n:"TODAY",d:"Today's date",s:"TODAY()",c:"Date"},
+  {n:"DATE",d:"Construct date",s:"DATE(year, month, day)",c:"Date"},
+  {n:"DATEDIF",d:"Date difference",s:"DATEDIF(start_date, end_date, unit)",c:"Date"},
+  {n:"DAYS",d:"Days between dates",s:"DAYS(end_date, start_date)",c:"Date"},
+  {n:"EOMONTH",d:"End of month",s:"EOMONTH(start_date, months)",c:"Date"},
+  {n:"WEEKDAY",d:"Weekday number",s:"WEEKDAY(date, [type])",c:"Date"},
+  {n:"YEAR",d:"Year number",s:"YEAR(date)",c:"Date"},
+  {n:"MONTH",d:"Month number",s:"MONTH(date)",c:"Date"},
+  {n:"ROW",d:"Row number",s:"ROW([cell_reference])",c:"Lookup"},
+  {n:"LARGE",d:"k-th largest",s:"LARGE(data, n)",c:"Statistical"}
+];
+
+const QUESTIONS=[
+  {id:1,diff:"medium",scenario:"You're managing a product inventory system. The warehouse team needs to find the stock quantity for Product ID 'P-105'. Write a formula to retrieve this value.",data:[["Product ID","Product Name","Category","Stock Qty","Unit Price"],["P-101","Laptop Pro","Electronics","45","1299"],["P-102","Wireless Mouse","Accessories","230","29"],["P-103","USB-C Cable","Accessories","450","15"],["P-104","Monitor 27\"","Electronics","78","399"],["P-105","Keyboard Mech","Accessories","156","89"],["P-106","Webcam HD","Electronics","92","79"]],expected:156,hint:"Search by ID and return stock quantity.",expl:"Lookup by Product ID and return Stock Qty."},
+  {id:2,diff:"hard",scenario:"Finance wants to find the Unit Price for 'Wireless Mouse'. The return column is to the LEFT of the lookup column.",data:[["Unit Price","Product Name","Category","Product ID"],["1299","Laptop Pro","Electronics","P-101"],["29","Wireless Mouse","Accessories","P-102"],["15","USB-C Cable","Accessories","P-103"],["399","Monitor 27\"","Electronics","P-104"],["89","Keyboard Mech","Accessories","P-105"]],expected:29,hint:"Use a lookup method that can return from the left.",expl:"INDEX+MATCH or XLOOKUP handles left lookups."},
+  {id:3,diff:"expert",scenario:"Find the Category for Product ID 'P-104' using a modern lookup method.",data:[["Product ID","Product Name","Category","Stock","Price"],["P-101","Laptop Pro","Electronics","45","1299"],["P-102","Wireless Mouse","Accessories","230","29"],["P-103","USB-C Cable","Accessories","450","15"],["P-104","Monitor 27\"","Electronics","78","399"],["P-105","Keyboard Mech","Accessories","156","89"]],expected:"Electronics",hint:"Use the lookup function with separate lookup and return ranges.",expl:"Return Category for P-104."},
+  {id:4,diff:"medium",scenario:"Orders of 1000 or more are 'High Value', everything else is 'Standard'. Write the formula for the first order.",data:[["Order ID","Customer","Order Value","Category"],["ORD-001","Acme Corp","1250",""] ,["ORD-002","TechStart","750",""] ,["ORD-003","Global Ltd","2100",""] ,["ORD-004","StartupX","450",""] ,["ORD-005","Enterprise Co","3200",""]],expected:"High Value",hint:"This is a two-branch conditional.",expl:"Check order value threshold and return category."},
+  {id:5,diff:"hard",scenario:"HR assigns bonuses: 15% for Outstanding, 10% for Excellent, 5% for Good, else 0. Calculate bonus for Sarah Chen.",data:[["Employee","Salary","Rating","Bonus"],["Sarah Chen","75000","Excellent",""] ,["Mike Brown","92000","Outstanding",""] ,["Emma Wilson","68000","Good",""] ,["James Lee","85000","Average",""] ,["Lisa White","98000","Excellent",""]],expected:7500,hint:"Use multiple conditions and multiply by salary.",expl:"Sarah is Excellent => 10% of 75000."},
+  {id:6,diff:"medium",scenario:"Find total revenue from Electronics category only.",data:[["Order ID","Category","Order Value"],["ORD-101","Electronics","1299"],["ORD-102","Accessories","29"],["ORD-103","Electronics","399"],["ORD-104","Furniture","850"],["ORD-105","Electronics","799"],["ORD-106","Accessories","45"],["ORD-107","Electronics","1499"]],expected:3996,hint:"Conditional sum by category.",expl:"Sum only rows where Category = Electronics."},
+  {id:7,diff:"hard",scenario:"Calculate total sales for Electronics in North region only.",data:[["Product","Category","Region","Sales"],["Laptop","Electronics","North","12500"],["Desk","Furniture","South","3200"],["Mouse","Electronics","North","890"],["Monitor","Electronics","South","5400"],["Chair","Furniture","North","2100"],["Keyboard","Electronics","North","1250"],["Table","Furniture","South","4800"]],expected:14640,hint:"Two criteria must both match.",expl:"Sum sales where category and region both match."},
+  {id:8,diff:"medium",scenario:"Count how many employees have 'Senior' in their title.",data:[["Employee","Job Title","Department"],["Alice Johnson","Senior Developer","Engineering"],["Bob Smith","Developer","Engineering"],["Carol White","Senior Designer","Design"],["David Lee","Marketing Manager","Marketing"],["Emma Brown","Senior Developer","Engineering"],["Frank Wilson","Designer","Design"],["Grace Taylor","Senior Analyst","Finance"]],expected:4,hint:"Count with wildcard text match.",expl:"Count titles containing 'Senior'."},
+  {id:9,diff:"medium",scenario:"Calculate average order value for Completed orders only.",data:[["Order ID","Status","Order Value"],["ORD-001","Completed","1250"],["ORD-002","Pending","890"],["ORD-003","Completed","2100"],["ORD-004","Cancelled","1580"],["ORD-005","Completed","1820"],["ORD-006","Completed","965"],["ORD-007","Pending","1200"]],expected:1533.75,hint:"Conditional average by status.",expl:"Average only completed rows."},
+  {id:10,diff:"hard",scenario:"Find average salary for Engineering employees with Years > 3.",data:[["Employee","Department","Years","Salary"],["Alice","Engineering","5","95000"],["Bob","Marketing","2","65000"],["Carol","Engineering","7","110000"],["David","Engineering","2","75000"],["Emma","Finance","4","80000"],["Frank","Engineering","6","105000"]],expected:103333.33,hint:"Average with two criteria.",expl:"Filter dept and tenure before averaging."},
+  {id:11,diff:"easy",scenario:"Extract first 3 characters from Product Code.",data:[["Product Code","Product Name","Category Prefix"],["ELC-12345","Laptop Pro",""] ,["ACC-67890","Wireless Mouse",""] ,["ELC-54321","Monitor 4K",""] ,["FUR-11223","Office Desk",""] ,["ACC-99887","USB Cable",""]],expected:"ELC",hint:"Pull fixed characters from the left.",expl:"First 3 characters form the prefix."},
+  {id:12,diff:"medium",scenario:"Extract last 5 characters from Product Code.",data:[["Product Code","Product Name","Numeric ID"],["ELC-12345","Laptop Pro",""] ,["ACC-67890","Wireless Mouse",""] ,["ELC-54321","Monitor 4K",""] ,["FUR-11223","Office Desk",""] ,["ACC-99887","USB Cable",""]],expected:"12345",hint:"Pull fixed characters from the right.",expl:"Last 5 chars are numeric id."},
+  {id:13,diff:"hard",scenario:"From email format firstname.lastname@department.company.com, extract department for first employee.",data:[["Employee","Email","Department"],["Alice Chen","alice.chen@engineering.techcorp.com",""] ,["Bob Smith","bob.smith@sales.techcorp.com",""] ,["Carol Lee","carol.lee@marketing.techcorp.com",""] ,["David Park","david.park@finance.techcorp.com",""]],expected:"engineering",hint:"Extract text between @ and next dot.",expl:"Department is segment after @."},
+  {id:14,diff:"medium",scenario:"Find position of hyphen (-) in Product Code.",data:[["Product Code","Hyphen Position"],["ELC-12345",""] ,["ACC-67890",""] ,["FUR-11223",""] ,["ELC-54321",""]],expected:4,hint:"Find character position in text.",expl:"Hyphen appears at character 4."},
+  {id:15,diff:"hard",scenario:"Format hire dates like 'January 15, 2023'.",data:[["Employee","Hire Date","Formatted Date"],["Alice Chen","2023-01-15",""] ,["Bob Smith","2022-08-22",""] ,["Carol Lee","2023-03-10",""] ,["David Park","2021-11-05",""]],expected:"January 15, 2023",hint:"Use text formatting for date display.",expl:"Format date using month name + day + year."},
+  {id:16,diff:"easy",scenario:"Calculate days elapsed since project start using today's date.",data:[["Project","Start Date","Days Elapsed"],["Website Redesign","2024-01-15",""] ,["Mobile App","2024-02-01",""] ,["Database Migration","2023-12-10",""] ,["API Development","2024-01-20",""]],expected:"dynamic",hint:"Use current date and subtract start date.",expl:"Result should be a non-negative number that changes over time.",validator:(v)=>typeof v==="number"&&isFinite(v)&&v>=0},
+  {id:17,diff:"medium",scenario:"Calculate complete years employed as of Feb 8, 2024.",data:[["Employee","Hire Date","Years Employed"],["Alice Chen","2019-03-15",""] ,["Bob Smith","2021-07-22",""] ,["Carol Lee","2018-11-05",""] ,["David Park","2020-01-10",""]],expected:4,hint:"Count full years only.",expl:"Use date-difference in years."},
+  {id:18,diff:"hard",scenario:"Find month-end date for each transaction date.",data:[["Transaction","Date","Month End"],["Payment 1","2024-01-15",""] ,["Payment 2","2024-02-08",""] ,["Payment 3","2024-03-22",""] ,["Payment 4","2024-04-05",""]],expected:"2024-01-31",hint:"Get last day of month.",expl:"Month-end for Jan 2024 is Jan 31."},
+  {id:19,diff:"medium",scenario:"Return unique customer names from a duplicate list.",data:[["Order ID","Customer"],["ORD-001","Acme Corp"],["ORD-002","TechStart"],["ORD-003","Acme Corp"],["ORD-004","Global Ltd"],["ORD-005","TechStart"],["ORD-006","Acme Corp"],["ORD-007","Innovate Inc"]],expected:"Acme Corp",hint:"Use distinct values function.",expl:"UNIQUE returns deduplicated customer list."},
+  {id:20,diff:"hard",scenario:"Return rows where Category is Electronics and Value > 500.",data:[["Order ID","Category","Value"],["ORD-001","Electronics","1250"],["ORD-002","Furniture","350"],["ORD-003","Electronics","780"],["ORD-004","Accessories","120"],["ORD-005","Electronics","450"],["ORD-006","Electronics","920"],["ORD-007","Furniture","680"]],expected:"ORD-001",hint:"Filter entire rows by two conditions.",expl:"First matching order is ORD-001."},
+  {id:21,diff:"expert",scenario:"Find Q3 sales for Product B from a row/column matrix.",data:[["","Q1","Q2","Q3","Q4"],["Product A","12000","15000","18000","22000"],["Product B","8500","9200","11500","13800"],["Product C","15600","17200","19800","21500"],["Product D","6700","7100","8900","10200"]],expected:11500,hint:"Do a 2D lookup by row and column.",expl:"Intersect Product B row with Q3 column."},
+  {id:22,diff:"medium",scenario:"Combine first and last name with a space.",data:[["First Name","Last Name","Full Name"],["Alice","Chen",""] ,["Bob","Smith",""] ,["Carol","Lee",""] ,["David","Park",""]],expected:"Alice Chen",hint:"Concatenate with a delimiter space.",expl:"Join first and last name text."},
+  {id:23,diff:"hard",scenario:"Join all product names into one cell separated by comma-space.",data:[["Product"],["Laptop"],["Mouse"],["Keyboard"],["Monitor"],["Webcam"]],expected:"Laptop, Mouse, Keyboard, Monitor, Webcam",hint:"Join a whole range with delimiter.",expl:"Combine entire column into a single string."},
+  {id:24,diff:"expert",scenario:"Compute total Electronics North revenue as Quantity*Price summed for matching rows.",data:[["Product","Category","Region","Quantity","Price"],["Laptop","Electronics","North","25","1200"],["Desk","Furniture","South","15","450"],["Mouse","Electronics","North","80","25"],["Monitor","Electronics","South","30","350"],["Chair","Furniture","North","40","180"],["Keyboard","Electronics","North","60","75"]],expected:36500,hint:"Multiply per row, filter rows, then sum.",expl:"Use array math with criteria + sum."},
+  {id:25,diff:"hard",scenario:"Look up Product ID 'P-999'. If missing, show 'Not Found'.",data:[["Product ID","Product Name","Price"],["P-101","Laptop","1299"],["P-102","Mouse","29"],["P-103","Keyboard","89"],["","",""] ,["Lookup ID:","P-999",""] ,["Result:","",""]],expected:"Not Found",hint:"Wrap lookup to catch missing value errors.",expl:"Display fallback text for not-found lookup."},
+  {id:26,diff:"medium",scenario:"Count length of cleaned customer name after removing extra spaces.",data:[["Original Name","Length"],["  Alice Chen  ",""] ,["Bob   Smith",""] ,["  Carol Lee",""] ,["David  Park  ",""]],expected:10,hint:"Trim first, then count characters.",expl:"Length should be counted after cleanup."},
+  {id:27,diff:"hard",scenario:"Count January 2024 orders with value > 1000.",data:[["Order Date","Order Value"],["2024-01-05","1250"],["2024-01-15","890"],["2024-01-22","1580"],["2024-02-03","1420"],["2024-01-28","750"],["2024-01-18","2100"],["2024-02-10","1680"]],expected:3,hint:"Apply start date, end date, and value criteria.",expl:"Three January orders exceed 1000."},
+  {id:28,diff:"expert",scenario:"Sort products by Price descending and return full table.",data:[["Product","Category","Price"],["Mouse","Accessories","29"],["Laptop","Electronics","1299"],["Keyboard","Accessories","89"],["Monitor","Electronics","399"],["Webcam","Electronics","79"]],expected:"Laptop",hint:"Sort by price descending.",expl:"Laptop should appear first."},
+  {id:29,diff:"medium",scenario:"Classify each deadline as Weekend or Weekday. Evaluate first row.",data:[["Project","Deadline","Day Type"],["Website Launch","2024-03-16",""] ,["App Release","2024-03-20",""] ,["Database Update","2024-03-23",""] ,["Security Audit","2024-03-25",""]],expected:"Weekend",hint:"Use weekday number and map weekends.",expl:"2024-03-16 is Saturday, so Weekend."},
+  {id:30,diff:"expert",scenario:"Return Engineering employees with salary > 80000 sorted by salary descending.",data:[["Name","Department","Salary","Years"],["Alice","Engineering","95000","5"],["Bob","Marketing","72000","3"],["Carol","Engineering","110000","7"],["David","Engineering","75000","2"],["Emma","Finance","88000","4"],["Frank","Engineering","105000","6"]],expected:"Carol",hint:"Use QUERY or FILTER+SORT.",expl:"Carol has highest qualifying salary."},
+  {id:31,diff:"medium",scenario:"Promotion rule: Years>=3 AND (Performance='Excellent' OR Certifications>=2). Evaluate Alice.",data:[["Employee","Years","Performance","Certifications","Qualifies"],["Alice","5","Excellent","1",""] ,["Bob","2","Good","3",""] ,["Carol","4","Good","2",""] ,["David","3","Excellent","0",""]],expected:true,hint:"Combine AND with nested OR.",expl:"Alice meets criteria."},
+  {id:32,diff:"hard",scenario:"Apply 15% discount to all prices using one formula for whole range.",data:[["Product","Original Price","Discounted Price"],["Laptop","1200",""] ,["Mouse","30",""] ,["Keyboard","85",""] ,["Monitor","400",""] ,["Webcam","75",""]],expected:1020,hint:"Use array-capable formula across column.",expl:"First discounted price should be 1020."},
+  {id:33,diff:"expert",scenario:"Commission tiers + bonus. Calculate Alice's total compensation.",data:[["Salesperson","Sales","Target","Total Comp"],["Alice","125000","100000",""] ,["Bob","85000","90000",""] ,["Carol","45000","50000",""] ,["David","110000","95000",""]],expected:13000,hint:"Tiered commission plus conditional bonus.",expl:"Alice earns 12500 + 500."},
+  {id:34,diff:"expert",scenario:"Replicate pivot output: total sales for Product A in North.",data:[["Order","Product","Region","Sales"],["1","Product A","North","2500"],["2","Product B","South","1800"],["3","Product A","North","3200"],["4","Product A","South","2100"],["5","Product B","North","2900"],["6","Product A","North","1800"],["7","Product B","South","2400"],["","","",""] ,["Pivot:","Product A","North","?"]],expected:7500,hint:"Sum sales where two fields match.",expl:"Product A + North rows sum to 7500."},
+  {id:35,diff:"hard",scenario:"Generate numbers 1 to 10 in one formula.",data:[["Step","Expected Output"],["Enter formula in B1","1 to 10 in B1:B10"],["-","-"] ,["-","-"] ,["-","-"] ,["-","-"]],expected:1,hint:"Use sequence function or row range approach.",expl:"First value should be 1."},
+  {id:36,diff:"medium",scenario:"Find the 3rd highest sales value in the table.",data:[["Rep","Sales"],["Ava","9500"],["Liam","12000"],["Noah","8700"],["Emma","15000"],["Mia","13200"],["Ethan","9100"]],expected:12000,hint:"Use ranking function for k-th largest value.",expl:"Sorted descending: 15000, 13200, 12000."},
+  {id:37,diff:"hard",scenario:"Count unique customers from the Orders table.",data:[["Order","Customer"],["1","Acme"],["2","Nova"],["3","Acme"],["4","Orbit"],["5","Nova"],["6","Pulse"]],expected:4,hint:"Deduplicate then count non-empty results.",expl:"Unique customers are Acme, Nova, Orbit, Pulse."},
+  {id:38,diff:"medium",scenario:"Extract first name from full name in A2.",data:[["Full Name","First Name"],["Priya Verma",""] ,["Arjun Rao",""] ,["Maya Singh",""]],expected:"Priya",hint:"Take text before the first space.",expl:"First name is the part before delimiter."},
+  {id:39,diff:"hard",scenario:"Return first non-empty note from A2:A8.",data:[["Note"],[""],[""],["Needs follow-up"],[""],["Call tomorrow"],[""],[""]],expected:"Needs follow-up",hint:"Filter non-blanks then return first result.",expl:"First filled note is in row 4."},
+  {id:40,diff:"expert",scenario:"Create monthly growth % for first row: (Current-Previous)/Previous using B2 and C2.",data:[["Month","Previous","Current","Growth"],["Jan","10000","11250",""] ,["Feb","11250","12150",""] ,["Mar","12150","11800",""]],expected:0.125,hint:"Compute percentage change from previous to current.",expl:"(11250-10000)/10000 = 0.125."}
+];
+
+let stats={done:0,correct:0};
+let activeFilter='all';
+let acIndex=-1;
+const resultState=new Map();
+
+function colLetter(i){
+  let n=i+1, s='';
+  while(n>0){const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26);} 
+  return s;
+}
+
+function buildCard(q){
+  const header=q.data[0];
+  let thead='<tr><th class="col-header"></th>';
+  header.forEach((_,i)=>thead+=`<th class="col-header">${colLetter(i)}</th>`);
+  thead+='</tr><tr><th class="col-header"></th>';
+  header.forEach(h=>thead+=`<th>${escapeHtml(h)}</th>`);
+  thead+='</tr>';
+
+  let tbody='';
+  for(let r=1;r<q.data.length;r++){
+    tbody+=`<tr><td class="row-num">${r+1}</td>`;
+    q.data[r].forEach((c,ci)=>{
+      tbody+=`<td data-qid="${q.id}" data-ref="${colLetter(ci)}${r+1}">${escapeHtml(String(c))}</td>`;
+    });
+    tbody+='</tr>';
+  }
+
+  return `
+  <article class="q-card" id="card-${q.id}">
+    <div class="card-top">
+      <span class="q-num">Q${q.id}</span>
+      <span class="q-status" id="status-${q.id}">Unsolved</span>
+      <span class="diff ${q.diff}">${q.diff}</span>
+    </div>
+    <div class="card-body">
+      <p class="scenario">${escapeHtml(q.scenario)}</p>
+      <div class="sheet-wrap">
+        <div class="sheet-head">Click any cell in this table to insert its reference into your formula.</div>
+        <div class="sheet-scroll"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>
+      </div>
+      <div class="formula-wrap ac-wrap">
+        <div class="formula-bar">
+          <div class="formula-top">
+            <div class="refbox" id="refbox-${q.id}">fx</div>
+            <div class="fx">fx</div>
+            <input class="formula-input" id="inp-${q.id}" placeholder="Type = to begin your formula..." autocomplete="off" spellcheck="false"
+              oninput="onInput(${q.id})"
+              onkeydown="onKeyDown(event,${q.id})">
+          </div>
+        </div>
+        <div class="ac-drop" id="ac-${q.id}"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-check" onclick="checkAnswer(${q.id})">Check</button>
+        <button class="btn" onclick="toggleHint(${q.id})">Hint</button>
+      </div>
+      <div class="hint-box" id="hint-${q.id}">${escapeHtml(q.hint)}</div>
+      <div class="feedback" id="fb-${q.id}"></div>
+    </div>
+  </article>`;
+}
+
+function renderAll(){
+  const grid=document.getElementById('qgrid');
+  const term=document.getElementById('search').value.toLowerCase();
+  const filtered=QUESTIONS.filter(q=>{
+    if(activeFilter!=='all'&&q.diff!==activeFilter)return false;
+    if(term && !q.scenario.toLowerCase().includes(term))return false;
+    return true;
+  });
+  grid.innerHTML=filtered.map(buildCard).join('');
+  bindCells();
+}
+
+function bindCells(){
+  document.querySelectorAll('td[data-qid]').forEach(td=>{
+    td.addEventListener('click',()=>insertRef(parseInt(td.dataset.qid,10),td.dataset.ref,td));
+  });
+}
+
+function insertRef(qid,ref,td){
+  const inp=document.getElementById(`inp-${qid}`);
+  if(!inp)return;
+  document.querySelectorAll(`td[data-qid="${qid}"]`).forEach(c=>c.classList.remove('cell-selected'));
+  td.classList.add('cell-selected');
+  document.getElementById(`refbox-${qid}`).textContent=ref;
+
+  const start=inp.selectionStart ?? inp.value.length;
+  const end=inp.selectionEnd ?? start;
+  inp.value=inp.value.slice(0,start)+ref+inp.value.slice(end);
+  const np=start+ref.length;
+  inp.setSelectionRange(np,np);
+  inp.focus();
+  closeAC(qid);
+}
+
+function onInput(qid){
+  const inp=document.getElementById(`inp-${qid}`);
+  const pos=inp.selectionStart ?? inp.value.length;
+  const val=inp.value.toUpperCase();
+  if(!val.startsWith('=')){closeAC(qid);return;}
+  const word=(val.slice(1,pos).match(/([A-Z][A-Z0-9.]*)$/)||[])[1]||'';
+  if(!word){closeAC(qid);return;}
+  const results=ALL_FORMULAS
+    .filter(f=>f.n.startsWith(word)||f.n.includes(word))
+    .sort((a,b)=>(a.n.startsWith(word)?0:1)-(b.n.startsWith(word)?0:1)||a.n.localeCompare(b.n))
+    .slice(0,10);
+  if(!results.length){closeAC(qid);return;}
+  acIndex=0;
+  renderAC(qid,results);
+}
+
+function renderAC(qid,results){
+  const drop=document.getElementById(`ac-${qid}`);
+  drop.innerHTML=results.map((f,i)=>`<div class="ac-item ${i===acIndex?'sel':''}" data-name="${f.n}" onclick="pickAC(${qid},'${f.n}')"><span class="ac-name">${f.n}</span><span class="ac-desc">${escapeHtml(f.d)}</span></div>`).join('');
+  drop.classList.add('open');
+}
+
+function pickAC(qid,name){
+  const inp=document.getElementById(`inp-${qid}`);
+  const pos=inp.selectionStart ?? inp.value.length;
+  const before=inp.value.slice(0,pos).replace(/([A-Za-z][A-Za-z0-9.]*)$/,name+'(');
+  inp.value=before+inp.value.slice(pos);
+  inp.setSelectionRange(before.length,before.length);
+  inp.focus();
+  closeAC(qid);
+}
+
+function onKeyDown(e,qid){
+  const drop=document.getElementById(`ac-${qid}`);
+  const isOpen=drop.classList.contains('open');
+  const items=drop.querySelectorAll('.ac-item');
+
+  if(isOpen){
+    if(e.key==='ArrowDown'){e.preventDefault();acIndex=Math.min(acIndex+1,items.length-1);highlightAC(items);}
+    else if(e.key==='ArrowUp'){e.preventDefault();acIndex=Math.max(acIndex-1,0);highlightAC(items);}
+    else if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();const sel=drop.querySelector('.sel');if(sel)pickAC(qid,sel.dataset.name);}
+    else if(e.key==='Escape'){closeAC(qid);}
+    return;
+  }
+  if(e.key==='Enter'){e.preventDefault();checkAnswer(qid);}
+}
+
+function highlightAC(items){
+  items.forEach((x,i)=>x.classList.toggle('sel',i===acIndex));
+  if(items[acIndex])items[acIndex].scrollIntoView({block:'nearest'});
+}
+
+function closeAC(qid){
+  const drop=document.getElementById(`ac-${qid}`);
+  if(drop)drop.classList.remove('open');
+  acIndex=-1;
+}
+
+function toggleHint(qid){
+  document.getElementById(`hint-${qid}`).classList.toggle('show');
+}
+
+function checkAnswer(qid){
+  const q=QUESTIONS.find(x=>x.id===qid);
+  const inp=document.getElementById(`inp-${qid}`);
+  const fb=document.getElementById(`fb-${qid}`);
+  const status=document.getElementById(`status-${qid}`);
+  const card=document.getElementById(`card-${qid}`);
+  closeAC(qid);
+
+  const formula=(inp.value||'').trim();
+  if(!formula){
+    fb.className='feedback show no';
+    fb.innerHTML='<strong>No formula entered.</strong>';
+    return;
+  }
+
+  let computed;
+  let err='';
+  try{
+    computed=evaluateFormula(formula,q.data);
+  }catch(e){
+    err=e.message||String(e);
+  }
+
+  let correct=false;
+  if(!err){
+    if(typeof q.validator==='function'){
+      correct=!!q.validator(computed);
+    }else{
+      correct=matchExpected(computed,q.expected);
+    }
+  }
+
+  const prev=resultState.get(qid);
+  if(prev===undefined)stats.done++;
+  if(correct&&prev!==true)stats.correct++;
+  if(!correct&&prev===true)stats.correct--;
+  resultState.set(qid,correct);
+  updateStats();
+
+  const userRes=err?`Error: ${escapeHtml(err)}`:escapeHtml(formatValueForUser(computed));
+  const exp=(q.expected==='dynamic')?'a valid dynamic result':escapeHtml(formatValueForUser(q.expected));
+
+  if(correct){
+    fb.className='feedback show ok';
+    fb.innerHTML=`<strong>Correct</strong>Output matched. Your result: <code>${userRes}</code><br>${escapeHtml(q.expl)}`;
+    status.textContent='Solved';
+    status.style.color='var(--good)';
+    card.classList.add('correct');card.classList.remove('wrong');
+    showToast('Correct output. Nice work.');
+  }else{
+    fb.className='feedback show no';
+    fb.innerHTML=`<strong>Not correct yet</strong>Your result: <code>${userRes}</code><br>Expected output: <code>${exp}</code><br>${escapeHtml(q.expl)}`;
+    status.textContent='Try again';
+    status.style.color='var(--bad)';
+    card.classList.add('wrong');card.classList.remove('correct');
+  }
+}
+
+function updateStats(){
+  document.getElementById('s-done').textContent=String(stats.done);
+  document.getElementById('s-correct').textContent=String(stats.correct);
+  document.getElementById('s-pct').textContent=stats.done?`${Math.round((stats.correct/stats.done)*100)}%`:'—';
+  document.getElementById('prog').style.width=`${(stats.done/QUESTIONS.length)*100}%`;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(showToast._id);
+  showToast._id=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function buildRef(term=''){
+  const body=document.getElementById('refBody');
+  const q=term.trim().toUpperCase();
+  const list=q?ALL_FORMULAS.filter(f=>f.n.includes(q)||f.d.toUpperCase().includes(q)||f.c.toUpperCase().includes(q)):ALL_FORMULAS;
+  const groups={};
+  list.forEach(x=>{if(!groups[x.c])groups[x.c]=[];groups[x.c].push(x);});
+  body.innerHTML=Object.keys(groups).map(cat=>`<div class="ref-section"><h3>${escapeHtml(cat)} (${groups[cat].length})</h3><div class="ref-grid">${groups[cat].map(f=>`<div class="ref-item"><div class="ref-item-name">${escapeHtml(f.n)}</div><div class="ref-item-desc">${escapeHtml(f.d)}</div><div class="ref-item-syn">${escapeHtml(f.s)}</div></div>`).join('')}</div></div>`).join('');
+}
+function openRef(){document.getElementById('refModal').classList.add('open');buildRef(document.getElementById('refSearch').value);}
+function closeRef(){document.getElementById('refModal').classList.remove('open');}
+function filterRef(){buildRef(document.getElementById('refSearch').value);}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
+}
+
+function isArrayVal(v){return v&&v.__arr===true;}
+function makeArr(values,rows=values.length,cols=1,startRow=null,startCol=null){return {__arr:true,values,rows,cols,startRow,startCol};}
+function flatten(v){return isArrayVal(v)?v.values:[v];}
+function first(v){return isArrayVal(v)?v.values[0]:v;}
+function toBool(v){
+  const x=first(v);
+  if(typeof x==='boolean')return x;
+  if(x instanceof Date)return true;
+  if(typeof x==='number')return x!==0;
+  if(x===null||x===undefined||x==='')return false;
+  if(typeof x==='string')return x.trim().length>0 && x.trim().toUpperCase()!=='FALSE';
+  return Boolean(x);
+}
+function toNum(v){
+  const x=first(v);
+  if(x instanceof Date)return dateSerial(x);
+  if(typeof x==='number')return x;
+  if(typeof x==='boolean')return x?1:0;
+  if(x===null||x===undefined||x==='')return 0;
+  if(typeof x==='string'){
+    const d=parseDate(x);
+    if(d)return dateSerial(d);
+    const n=Number(String(x).replace(/,/g,''));
+    return Number.isFinite(n)?n:NaN;
+  }
+  return NaN;
+}
+function asComparable(v){
+  const x=first(v);
+  if(x instanceof Date)return dateSerial(x);
+  if(typeof x==='number')return x;
+  if(typeof x==='boolean')return x?1:0;
+  if(x===null||x===undefined)return '';
+  const d=parseDate(x);
+  if(d)return dateSerial(d);
+  const n=Number(String(x).replace(/,/g,''));
+  if(Number.isFinite(n))return n;
+  return String(x).trim().toLowerCase();
+}
+function dateSerial(d){return Math.floor(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())/86400000);}
+function parseDate(v){
+  if(v instanceof Date)return v;
+  if(typeof v==='number')return new Date(v*86400000);
+  if(typeof v!=='string')return null;
+  const m=v.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!m)return null;
+  const d=new Date(Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3])));
+  return Number.isNaN(d.getTime())?null:d;
+}
+function formatDate(d){
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+function formatPrettyDate(d){
+  const names=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  return `${names[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+}
+function parseCellRaw(v){
+  if(v===null||v===undefined)return '';
+  if(typeof v==='number'||typeof v==='boolean'||v instanceof Date)return v;
+  const s=String(v).trim();
+  if(s==='')return '';
+  const d=parseDate(s); if(d)return d;
+  if(/^-?\d+(\.\d+)?$/.test(s))return Number(s);
+  if(/^true$/i.test(s))return true;
+  if(/^false$/i.test(s))return false;
+  return s;
+}
+function colToIndex(label){
+  let n=0;
+  for(const ch of label.toUpperCase())n=n*26+(ch.charCodeAt(0)-64);
+  return n-1;
+}
+
+function createSheet(data){
+  return {
+    getCell(ref){
+      const m=ref.match(/^\$?([A-Z]+)\$?(\d+)$/i);
+      if(!m)throw new Error(`Invalid cell reference: ${ref}`);
+      const c=colToIndex(m[1]);
+      const r=Number(m[2])-1;
+      if(r<0||c<0||r>=data.length||c>=data[r].length)return '';
+      return parseCellRaw(data[r][c]);
+    },
+    getRange(ref){
+      const m=ref.match(/^\$?([A-Z]+)\$?(\d+):\$?([A-Z]+)\$?(\d+)$/i);
+      if(!m)throw new Error(`Invalid range reference: ${ref}`);
+      const c1=colToIndex(m[1]), r1=Number(m[2])-1, c2=colToIndex(m[3]), r2=Number(m[4])-1;
+      const rs=Math.min(r1,r2), re=Math.max(r1,r2), cs=Math.min(c1,c2), ce=Math.max(c1,c2);
+      const vals=[];
+      for(let r=rs;r<=re;r++){
+        for(let c=cs;c<=ce;c++){
+          vals.push(r>=0&&c>=0&&r<data.length&&c<(data[r]||[]).length?parseCellRaw(data[r][c]):'');
+        }
+      }
+      return makeArr(vals,re-rs+1,ce-cs+1,rs+1,cs+1);
+    }
+  };
+}
+
+function tokenize(input){
+  const src=input.replace(/^\s*=/,'').trim();
+  const out=[];
+  let i=0;
+  while(i<src.length){
+    const ch=src[i];
+    if(/\s/.test(ch)){i++;continue;}
+    const two=src.slice(i,i+2);
+    if([">=","<=","<>","!="].includes(two)){out.push({t:'op',v:two});i+=2;continue;}
+    if(["+","-","*","/","^","&","=",">","<","(",")",",",";","{","}"].includes(ch)){
+      out.push({t:ch==='('||ch===')'||ch===','||ch===';'||ch==='{'||ch==='}'?'p':'op',v:ch});i++;continue;
+    }
+    if(ch==='"'){
+      let j=i+1,s='';
+      while(j<src.length){
+        if(src[j]==='"'&&src[j+1]==='"'){s+='"';j+=2;continue;}
+        if(src[j]==='"')break;
+        s+=src[j++];
+      }
+      if(j>=src.length)throw new Error('Unterminated string literal');
+      out.push({t:'str',v:s});i=j+1;continue;
+    }
+    const refMatch=src.slice(i).match(/^\$?[A-Za-z]+\$?\d+(?::\$?[A-Za-z]+\$?\d+)?/);
+    if(refMatch){out.push({t:'ref',v:refMatch[0].toUpperCase()});i+=refMatch[0].length;continue;}
+    const numMatch=src.slice(i).match(/^\d+(?:\.\d+)?/);
+    if(numMatch){out.push({t:'num',v:Number(numMatch[0])});i+=numMatch[0].length;continue;}
+    const idMatch=src.slice(i).match(/^[A-Za-z_][A-Za-z0-9_.]*/);
+    if(idMatch){out.push({t:'id',v:idMatch[0].toUpperCase()});i+=idMatch[0].length;continue;}
+    throw new Error(`Unexpected token near '${src.slice(i,i+12)}'`);
+  }
+  return out;
+}
+
+function parseFormula(formula){
+  const tokens=tokenize(formula);
+  let p=0;
+  const peek=()=>tokens[p];
+  const eat=(v)=>{const tok=tokens[p];if(!tok||tok.v!==v)throw new Error(`Expected '${v}'`);p++;return tok;};
+
+  function parseExpr(){return parseCompare();}
+  function parseCompare(){
+    let node=parseConcat();
+    while(peek()&&peek().t==='op'&&['=','<>','!=','>','<','>=','<='].includes(peek().v)){
+      const op=peek().v;p++;const right=parseConcat();node={k:'bin',op,left:node,right};
+    }
+    return node;
+  }
+  function parseConcat(){
+    let node=parseAdd();
+    while(peek()&&peek().t==='op'&&peek().v==='&'){p++;node={k:'bin',op:'&',left:node,right:parseAdd()};}
+    return node;
+  }
+  function parseAdd(){
+    let node=parseMul();
+    while(peek()&&peek().t==='op'&&['+','-'].includes(peek().v)){const op=peek().v;p++;node={k:'bin',op,left:node,right:parseMul()};}
+    return node;
+  }
+  function parseMul(){
+    let node=parsePow();
+    while(peek()&&peek().t==='op'&&['*','/'].includes(peek().v)){const op=peek().v;p++;node={k:'bin',op,left:node,right:parsePow()};}
+    return node;
+  }
+  function parsePow(){
+    let node=parseUnary();
+    while(peek()&&peek().t==='op'&&peek().v==='^'){p++;node={k:'bin',op:'^',left:node,right:parseUnary()};}
+    return node;
+  }
+  function parseUnary(){
+    if(peek()&&peek().t==='op'&&['+','-'].includes(peek().v)){const op=peek().v;p++;return {k:'un',op,node:parseUnary()};}
+    return parsePrimary();
+  }
+  function parseArrayLiteral(){
+    eat('{');
+    const rows=[];
+    let current=[];
+    while(peek()&&peek().v!=='}'){
+      current.push(parseExpr());
+      if(peek()&&peek().v===','){eat(',');continue;}
+      if(peek()&&peek().v===';'){eat(';');rows.push(current);current=[];continue;}
+      if(peek()&&peek().v==='}')break;
+      throw new Error('Invalid array literal');
+    }
+    rows.push(current);
+    eat('}');
+    return {k:'arrlit',rows};
+  }
+  function parsePrimary(){
+    const tok=peek();
+    if(!tok)throw new Error('Unexpected end of formula');
+    if(tok.t==='num'){p++;return {k:'lit',v:tok.v};}
+    if(tok.t==='str'){p++;return {k:'lit',v:tok.v};}
+    if(tok.t==='ref'){p++;return {k:'ref',v:tok.v};}
+    if(tok.t==='id'){
+      p++;
+      if(tok.v==='TRUE')return {k:'lit',v:true};
+      if(tok.v==='FALSE')return {k:'lit',v:false};
+      if(peek()&&peek().v==='('){
+        eat('(');
+        const args=[];
+        if(!peek()||peek().v!==')'){
+          while(true){
+            args.push(parseExpr());
+            if(peek()&&peek().v===','){eat(',');continue;}
+            break;
+          }
+        }
+        eat(')');
+        return {k:'call',n:tok.v,args};
+      }
+      return {k:'id',v:tok.v};
+    }
+    if(tok.v==='('){eat('(');const node=parseExpr();eat(')');return node;}
+    if(tok.v==='{')return parseArrayLiteral();
+    throw new Error(`Unexpected token '${tok.v}'`);
+  }
+
+  const root=parseExpr();
+  if(p<tokens.length)throw new Error(`Unexpected token '${tokens[p].v}'`);
+  return root;
+}
+
+function evaluateFormula(formula,data){
+  const ast=parseFormula(formula);
+  const sheet=createSheet(data);
+  return evalNode(ast,sheet);
+}
+
+function evalNode(node,sheet){
+  switch(node.k){
+    case 'lit': return node.v;
+    case 'id': return node.v;
+    case 'ref': return node.v.includes(':')?sheet.getRange(node.v):sheet.getCell(node.v);
+    case 'arrlit': {
+      const rowVals=node.rows.map(r=>r.map(x=>evalNode(x,sheet)));
+      const rows=rowVals.length, cols=Math.max(...rowVals.map(r=>r.length));
+      const vals=[];
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++)vals.push(first(rowVals[r][c]??''));
+      }
+      return makeArr(vals,rows,cols);
+    }
+    case 'un': {
+      const v=evalNode(node.node,sheet);
+      return unary(node.op,v);
+    }
+    case 'bin': {
+      const a=evalNode(node.left,sheet);
+      const b=evalNode(node.right,sheet);
+      return binary(node.op,a,b);
+    }
+    case 'call': return callFn(node,sheet);
+    default: throw new Error('Unknown node');
+  }
+}
+
+function unary(op,v){
+  if(isArrayVal(v))return makeArr(v.values.map(x=>unary(op,x)),v.rows,v.cols,v.startRow,v.startCol);
+  if(op==='+')return toNum(v);
+  if(op==='-')return -toNum(v);
+  throw new Error(`Unknown unary operator ${op}`);
+}
+
+function binary(op,a,b){
+  if(isArrayVal(a)||isArrayVal(b))return binaryArray(op,a,b);
+  return binaryScalar(op,a,b);
+}
+
+function binaryArray(op,a,b){
+  const av=isArrayVal(a)?a.values:[a];
+  const bv=isArrayVal(b)?b.values:[b];
+  const len=Math.max(av.length,bv.length);
+  if(av.length!==1&&bv.length!==1&&av.length!==bv.length)throw new Error('Array size mismatch');
+  const out=[];
+  for(let i=0;i<len;i++)out.push(binaryScalar(op,av[av.length===1?0:i],bv[bv.length===1?0:i]));
+  const shape=isArrayVal(a)&&a.values.length===len?a:isArrayVal(b)&&b.values.length===len?b:null;
+  return makeArr(out,shape?shape.rows:len,shape?shape.cols:1,shape?shape.startRow:null,shape?shape.startCol:null);
+}
+
+function binaryScalar(op,a,b){
+  switch(op){
+    case '+': return toNum(a)+toNum(b);
+    case '-': return toNum(a)-toNum(b);
+    case '*': return toNum(a)*toNum(b);
+    case '/': return toNum(a)/toNum(b);
+    case '^': return Math.pow(toNum(a),toNum(b));
+    case '&': return String(first(a)??'')+String(first(b)??'');
+    case '=': return compare(a,b)===0;
+    case '<>':
+    case '!=': return compare(a,b)!==0;
+    case '>': return compare(a,b)>0;
+    case '<': return compare(a,b)<0;
+    case '>=': return compare(a,b)>=0;
+    case '<=': return compare(a,b)<=0;
+    default: throw new Error(`Unknown operator ${op}`);
+  }
+}
+
+function callFn(node,sheet){
+  const name=node.n;
+  if(name==='IFERROR'||name==='IFNA'){
+    try{return evalNode(node.args[0],sheet);}catch(_){return node.args[1]?evalNode(node.args[1],sheet):'';}
+  }
+  const args=node.args.map(a=>evalNode(a,sheet));
+  const fn=FN[name];
+  if(!fn)throw new Error(`Function ${name} is not supported yet`);
+  return fn(...args);
+}
+
+function toRows(arrVal){
+  if(!isArrayVal(arrVal))return [[arrVal]];
+  const rows=[];
+  for(let r=0;r<arrVal.rows;r++)rows.push(arrVal.values.slice(r*arrVal.cols,(r+1)*arrVal.cols));
+  return rows;
+}
+
+function parseCriterion(criterion){
+  if(typeof criterion!=='string')return {op:'=',val:criterion};
+  const s=criterion.trim();
+  const m=s.match(/^(>=|<=|<>|!=|=|>|<)(.*)$/);
+  if(m)return {op:m[1],val:m[2].trim()};
+  return {op:'=',val:s};
+}
+
+function wildcardMatch(value,pattern){
+  const escaped=pattern.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\?/g,'.');
+  return new RegExp(`^${escaped}$`,'i').test(String(value));
+}
+
+function criterionMatch(value,criterion){
+  const crit=parseCriterion(first(criterion));
+  if(typeof crit.val==='string'&&(crit.val.includes('*')||crit.val.includes('?'))&&crit.op==='=')return wildcardMatch(value,crit.val);
+  const val=first(value);
+  const left=asComparable(val);
+  let right=crit.val;
+  if(typeof right==='string'){
+    const d=parseDate(right);
+    if(d)right=dateSerial(d);
+    else if(/^[-+]?\d+(\.\d+)?$/.test(right))right=Number(right);
+    else right=right.toLowerCase();
+  }
+  switch(crit.op){
+    case '=': return compare(left,right)===0;
+    case '<>':
+    case '!=': return compare(left,right)!==0;
+    case '>': return compare(left,right)>0;
+    case '<': return compare(left,right)<0;
+    case '>=': return compare(left,right)>=0;
+    case '<=': return compare(left,right)<=0;
+    default: return false;
+  }
+}
+
+function compare(a,b){
+  if(a instanceof Date)a=dateSerial(a);
+  if(b instanceof Date)b=dateSerial(b);
+  const an=typeof a==='number'?a:Number(a);
+  const bn=typeof b==='number'?b:Number(b);
+  if(Number.isFinite(an)&&Number.isFinite(bn))return an===bn?0:(an>bn?1:-1);
+  const as=String(a).trim().toLowerCase();
+  const bs=String(b).trim().toLowerCase();
+  return as===bs?0:(as>bs?1:-1);
+}
+
+const FN={
+  SUM:(...args)=>flattenAll(args).reduce((s,v)=>s+(Number.isFinite(toNum(v))?toNum(v):0),0),
+  AVERAGE:(...args)=>{const nums=flattenAll(args).map(toNum).filter(Number.isFinite);return nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:0;},
+  COUNT:(...args)=>flattenAll(args).filter(v=>Number.isFinite(toNum(v))).length,
+  COUNTA:(...args)=>flattenAll(args).filter(v=>String(v).trim()!=='').length,
+  MIN:(...args)=>Math.min(...flattenAll(args).map(toNum).filter(Number.isFinite)),
+  MAX:(...args)=>Math.max(...flattenAll(args).map(toNum).filter(Number.isFinite)),
+  LARGE:(arr,k)=>{const vals=flatten(arr).map(toNum).filter(Number.isFinite).sort((a,b)=>b-a);return vals[Math.max(0,Math.min(vals.length-1,Math.round(toNum(k))-1))]??'';},
+
+  IF:(cond,tv,fv='')=>toBool(cond)?tv:fv,
+  IFS:(...args)=>{for(let i=0;i<args.length-1;i+=2){if(toBool(args[i]))return args[i+1];}return '';},
+  AND:(...args)=>args.every(toBool),
+  OR:(...args)=>args.some(toBool),
+  NOT:(v)=>!toBool(v),
+  SWITCH:(expr,...args)=>{const base=first(expr);for(let i=0;i<args.length-1;i+=2){if(compare(base,first(args[i]))===0)return args[i+1];}return args.length%2===1?args[args.length-1]:'';},
+
+  SUMIF:(range,criterion,sumRange)=>{
+    const r=flatten(range), s=sumRange?flatten(sumRange):r;
+    let total=0;
+    for(let i=0;i<r.length;i++)if(criterionMatch(r[i],criterion))total+=toNum(s[i]);
+    return total;
+  },
+  SUMIFS:(sumRange,...pairs)=>{
+    const s=flatten(sumRange);let total=0;
+    for(let i=0;i<s.length;i++){
+      let ok=true;
+      for(let p=0;p<pairs.length;p+=2){if(!criterionMatch(flatten(pairs[p])[i],pairs[p+1])){ok=false;break;}}
+      if(ok)total+=toNum(s[i]);
+    }
+    return total;
+  },
+  COUNTIF:(range,criterion)=>flatten(range).filter(v=>criterionMatch(v,criterion)).length,
+  COUNTIFS:(...pairs)=>{
+    const n=flatten(pairs[0]).length;let c=0;
+    for(let i=0;i<n;i++){
+      let ok=true;
+      for(let p=0;p<pairs.length;p+=2){if(!criterionMatch(flatten(pairs[p])[i],pairs[p+1])){ok=false;break;}}
+      if(ok)c++;
+    }
+    return c;
+  },
+  AVERAGEIF:(range,criterion,avgRange)=>{
+    const r=flatten(range), a=avgRange?flatten(avgRange):r;const nums=[];
+    for(let i=0;i<r.length;i++)if(criterionMatch(r[i],criterion))nums.push(toNum(a[i]));
+    const v=nums.filter(Number.isFinite);return v.length?v.reduce((x,y)=>x+y,0)/v.length:0;
+  },
+  AVERAGEIFS:(avgRange,...pairs)=>{
+    const a=flatten(avgRange), nums=[];
+    for(let i=0;i<a.length;i++){
+      let ok=true;
+      for(let p=0;p<pairs.length;p+=2){if(!criterionMatch(flatten(pairs[p])[i],pairs[p+1])){ok=false;break;}}
+      if(ok)nums.push(toNum(a[i]));
+    }
+    const v=nums.filter(Number.isFinite);return v.length?v.reduce((x,y)=>x+y,0)/v.length:0;
+  },
+  SUMPRODUCT:(...arrays)=>{
+    const fl=arrays.map(a=>flatten(a));
+    const n=Math.max(...fl.map(a=>a.length));
+    let total=0;
+    for(let i=0;i<n;i++){
+      let prod=1;
+      for(const arr of fl)prod*=toNum(arr[arr.length===1?0:i]);
+      total+=prod;
+    }
+    return total;
+  },
+
+  INDEX:(range,row,col=1)=>{
+    if(!isArrayVal(range))return range;
+    const r=Math.round(toNum(row));
+    const c=Math.round(toNum(col));
+    if(r<1||c<1||r>range.rows||c>range.cols)return '';
+    return range.values[(r-1)*range.cols+(c-1)];
+  },
+  MATCH:(lookup,range,searchType=0)=>{
+    const key=first(lookup);const vals=flatten(range);
+    if(toNum(searchType)!==0){
+      for(let i=vals.length-1;i>=0;i--)if(compare(vals[i],key)<=0)return i+1;
+      return 1;
+    }
+    for(let i=0;i<vals.length;i++)if(compare(vals[i],key)===0)return i+1;
+    throw new Error('MATCH: value not found');
+  },
+  VLOOKUP:(key,range,index,isSorted=false)=>{
+    if(!isArrayVal(range))throw new Error('VLOOKUP requires a range');
+    const idx=Math.round(toNum(index));
+    if(idx<1||idx>range.cols)throw new Error('VLOOKUP index out of range');
+    const rows=toRows(range);
+    for(const r of rows){if(compare(r[0],first(key))===0)return r[idx-1];}
+    if(toBool(isSorted))return rows[rows.length-1]?.[idx-1]??'';
+    throw new Error('VLOOKUP: not found');
+  },
+  XLOOKUP:(key,lookupRange,returnRange,ifNotFound='')=>{
+    const lk=flatten(lookupRange), ret=flatten(returnRange);
+    for(let i=0;i<lk.length;i++)if(compare(lk[i],first(key))===0)return ret[i];
+    if(ifNotFound!==undefined)return ifNotFound;
+    throw new Error('XLOOKUP: not found');
+  },
+  FILTER:(range,...conds)=>{
+    if(!isArrayVal(range))return range;
+    const rows=toRows(range);
+    const condRows=conds.map(c=>flatten(c));
+    const out=[];
+    for(let i=0;i<rows.length;i++){
+      if(condRows.every(c=>toBool(c[Math.min(i,c.length-1)])))out.push(...rows[i]);
+    }
+    if(!out.length)throw new Error('FILTER: no matches');
+    return makeArr(out,out.length/range.cols,range.cols);
+  },
+  UNIQUE:(range)=>{
+    if(!isArrayVal(range))return range;
+    const rows=toRows(range);
+    const seen=new Set();const out=[];
+    for(const r of rows){const key=r.map(v=>String(v)).join('\u0001');if(!seen.has(key)){seen.add(key);out.push(...r);}}
+    return makeArr(out,out.length/range.cols,range.cols);
+  },
+  SORT:(range,sortCol=1,isAsc=true)=>{
+    if(!isArrayVal(range))return range;
+    const col=Math.max(1,Math.round(toNum(sortCol)))-1;
+    const asc=toBool(isAsc);
+    const rows=toRows(range).slice().sort((a,b)=>asc?compare(a[col],b[col]):compare(b[col],a[col]));
+    return makeArr(rows.flat(),rows.length,range.cols);
+  },
+  QUERY:(range,query,headers=1)=>{
+    if(!isArrayVal(range))return range;
+    const q=String(first(query));
+    const h=Math.max(0,Math.round(toNum(headers)||1));
+    const rows=toRows(range);
+    const dataRows=rows.slice(h);
+
+    let filtered=dataRows;
+    const where=q.match(/\bWHERE\b([\s\S]*?)(\bORDER\s+BY\b|$)/i);
+    if(where){
+      const conds=where[1].split(/\bAND\b/i).map(s=>s.trim()).filter(Boolean);
+      filtered=filtered.filter(row=>conds.every(c=>{
+        const m=c.match(/^([A-Z])\s*(=|>=|<=|<>|!=|>|<)\s*(.+)$/i);
+        if(!m)return true;
+        const idx=colToIndex(m[1]);
+        let val=m[3].trim();
+        if((val.startsWith("'")&&val.endsWith("'"))||(val.startsWith('"')&&val.endsWith('"')))val=val.slice(1,-1);
+        return binaryScalar(m[2],row[idx],val);
+      }));
+    }
+
+    const order=q.match(/\bORDER\s+BY\s+([A-Z])(?:\s+(ASC|DESC))?/i);
+    if(order){
+      const idx=colToIndex(order[1]);
+      const desc=(order[2]||'ASC').toUpperCase()==='DESC';
+      filtered=filtered.slice().sort((a,b)=>desc?compare(b[idx],a[idx]):compare(a[idx],b[idx]));
+    }
+    return makeArr(filtered.flat(),filtered.length,range.cols);
+  },
+
+  LEFT:(text,n=1)=>String(first(text)).slice(0,Math.max(0,Math.round(toNum(n)))),
+  RIGHT:(text,n=1)=>{const s=String(first(text));const k=Math.max(0,Math.round(toNum(n)));return s.slice(s.length-k);},
+  MID:(text,start,len)=>{const s=String(first(text));const st=Math.max(1,Math.round(toNum(start)));const l=Math.max(0,Math.round(toNum(len)));return s.substr(st-1,l);},
+  LEN:(text)=>String(first(text)).length,
+  TRIM:(text)=>String(first(text)).trim().replace(/\s+/g,' '),
+  FIND:(search,within,start=1)=>{const i=String(first(within)).indexOf(String(first(search)),Math.max(0,Math.round(toNum(start))-1));if(i<0)throw new Error('FIND: not found');return i+1;},
+  SEARCH:(search,within,start=1)=>{const i=String(first(within)).toLowerCase().indexOf(String(first(search)).toLowerCase(),Math.max(0,Math.round(toNum(start))-1));if(i<0)throw new Error('SEARCH: not found');return i+1;},
+  TEXTJOIN:(delim,ignoreEmpty,...rest)=>{
+    const d=String(first(delim));const ign=toBool(ignoreEmpty);
+    const vals=flattenAll(rest).map(v=>first(v));
+    return vals.filter(v=>!(ign&&String(v)==='')).map(v=>String(v)).join(d);
+  },
+  JOIN:(delim,...rest)=>flattenAll(rest).map(v=>String(first(v))).join(String(first(delim))),
+  CONCATENATE:(...rest)=>flattenAll(rest).map(v=>String(first(v))).join(''),
+  TEXT:(value,fmt)=>{
+    const f=String(first(fmt)).toUpperCase();
+    const d=parseDate(first(value));
+    if(d&&(f==='MMMM D, YYYY'||f==='MMMM DD, YYYY'))return formatPrettyDate(d);
+    return String(first(value));
+  },
+  REGEXEXTRACT:(text,pattern)=>{
+    const m=String(first(text)).match(new RegExp(String(first(pattern))));
+    if(!m)throw new Error('REGEXEXTRACT: no match');
+    return m[1]??m[0];
+  },
+  TEXTBEFORE:(text,delim)=>String(first(text)).split(String(first(delim)))[0],
+  TEXTAFTER:(text,delim)=>{const s=String(first(text));const d=String(first(delim));const i=s.indexOf(d);if(i<0)throw new Error('TEXTAFTER: delimiter not found');return s.slice(i+d.length);},
+
+  DATE:(y,m,d)=>new Date(Date.UTC(Math.round(toNum(y)),Math.round(toNum(m))-1,Math.round(toNum(d)))),
+  TODAY:()=>{const n=new Date();return new Date(Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()));},
+  DAYS:(end,start)=>dateSerial(parseDate(first(end)))-dateSerial(parseDate(first(start))),
+  DATEDIF:(start,end,unit)=>{
+    const s=parseDate(first(start)),e=parseDate(first(end));
+    const u=String(first(unit)).toUpperCase();
+    if(!s||!e)return '';
+    if(u==='D')return dateSerial(e)-dateSerial(s);
+    if(u==='Y'){
+      let y=e.getUTCFullYear()-s.getUTCFullYear();
+      const m=e.getUTCMonth()-s.getUTCMonth();
+      if(m<0||(m===0&&e.getUTCDate()<s.getUTCDate()))y--;
+      return y;
+    }
+    return dateSerial(e)-dateSerial(s);
+  },
+  EOMONTH:(date,months)=>{const d=parseDate(first(date));if(!d)throw new Error('EOMONTH: invalid date');const m=d.getUTCMonth()+Math.round(toNum(months))+1;return new Date(Date.UTC(d.getUTCFullYear(),m,0));},
+  WEEKDAY:(date,type=1)=>{
+    const d=parseDate(first(date));if(!d)throw new Error('WEEKDAY: invalid date');
+    const day=d.getUTCDay();
+    if(Math.round(toNum(type))===2)return day===0?7:day;
+    return day+1;
+  },
+  YEAR:(date)=>parseDate(first(date))?.getUTCFullYear()??'',
+  MONTH:(date)=>((parseDate(first(date))?.getUTCMonth()??-1)+1),
+
+  ARRAYFORMULA:(x)=>x,
+  SEQUENCE:(rows,cols=1,start=1,step=1)=>{
+    const r=Math.max(1,Math.round(toNum(rows))),c=Math.max(1,Math.round(toNum(cols)));
+    let cur=toNum(start),inc=toNum(step);
+    const out=[];
+    for(let i=0;i<r*c;i++){out.push(cur);cur+=inc;}
+    return makeArr(out,r,c);
+  },
+  ROW:(ref)=>{
+    if(!isArrayVal(ref))return 1;
+    const out=[];
+    for(let i=0;i<ref.rows;i++)out.push((ref.startRow||1)+i);
+    return makeArr(out,ref.rows,1,ref.startRow,1);
+  }
+};
+
+function flattenAll(args){
+  const out=[];
+  args.forEach(a=>{
+    if(isArrayVal(a))out.push(...a.values);
+    else out.push(a);
+  });
+  return out;
+}
+
+function normalizeCompare(v){
+  if(v instanceof Date)return formatDate(v);
+  if(typeof v==='number')return Math.round(v*1000000)/1000000;
+  if(typeof v==='boolean')return v;
+  if(v===null||v===undefined)return '';
+  const d=parseDate(v);if(d)return formatDate(d);
+  const n=Number(String(v).replace(/,/g,''));if(Number.isFinite(n)&&String(v).trim()!=='')return Math.round(n*1000000)/1000000;
+  return String(v).trim().toLowerCase();
+}
+
+function matchExpected(result,expected){
+  if(expected==='dynamic')return true;
+  const exp=normalizeCompare(expected);
+  const vals=isArrayVal(result)?result.values:[result];
+  if(typeof exp==='number')return vals.some(v=>{const n=normalizeCompare(v);return typeof n==='number'&&Math.abs(n-exp)<0.02;});
+  return vals.some(v=>normalizeCompare(v)===exp);
+}
+
+function formatValueForUser(v){
+  if(isArrayVal(v)){
+    const preview=v.values.slice(0,Math.min(6,v.values.length)).map(formatValueForUser).join(', ');
+    return `[${preview}${v.values.length>6?', ...':''}]`;
+  }
+  if(v instanceof Date)return formatDate(v);
+  if(typeof v==='number'){return Number.isInteger(v)?String(v):String(Math.round(v*100000)/100000);}
+  if(typeof v==='boolean')return v?'TRUE':'FALSE';
+  if(v===null||v===undefined||v==='')return '(blank)';
+  return String(v);
+}
+
+// Theme
+(function initTheme(){
+  const saved=localStorage.getItem('gon_theme');
+  const theme=saved==='light'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',theme);
+})();
+document.getElementById('themeToggle').addEventListener('click',()=>{
+  const curr=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+  const next=curr==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('gon_theme',next);
+});
+
+// UI events
+document.getElementById('filters').addEventListener('click',e=>{
+  if(!e.target.classList.contains('pill'))return;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  activeFilter=e.target.dataset.f;
+  renderAll();
+});
+document.getElementById('search').addEventListener('input',renderAll);
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ac-wrap'))QUESTIONS.forEach(q=>closeAC(q.id));
+});
+
+document.getElementById('s-total').textContent=String(QUESTIONS.length);
+updateStats();
+renderAll();
+
+// Inverted cursor (desktop): appears black on light and white on dark using mix-blend-mode:difference
+(function initCursor(){
+  const c=document.getElementById('cursorInvert');
+  if(!c) return;
+  const enabled=window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if(!enabled) return;
+  document.addEventListener('mousemove',(e)=>{
+    c.style.left=e.clientX+'px';
+    c.style.top=e.clientY+'px';
+    c.classList.add('show');
+  });
+  document.addEventListener('mouseleave',()=>c.classList.remove('show'));
+  document.addEventListener('mousedown',()=>c.classList.add('press'));
+  document.addEventListener('mouseup',()=>c.classList.remove('press'));
+})();
+</script>
+</body>
+</html>
