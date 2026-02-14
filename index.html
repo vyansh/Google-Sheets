@@ -708,7 +708,7 @@ td[data-qid]:hover{background:var(--glass-2);}
     </div>
     <div class="head-right">
       <div class="stats">
-        <div class="stat stat-eye"><span class="eye-icon">👁</span><strong id="s-visits">—</strong><span>Global Visits</span></div>
+        <div class="stat stat-eye"><span class="eye-icon">👁</span><strong id="s-visits">0</strong><span>Visits</span></div>
         <div class="stat"><strong id="s-total">0</strong><span>Questions</span></div>
         <div class="stat"><strong id="s-done">0</strong><span>Attempted</span></div>
         <div class="stat"><strong id="s-correct">0</strong><span>Correct</span></div>
@@ -939,7 +939,7 @@ let acIndex=-1;
 const resultState=new Map();
 const PROFILE_DB_KEY='gon_profile_db_v1';
 const GLOBAL_VISITS_CACHE_KEY='gon_global_visits_cache_v1';
-const GLOBAL_VISITS_ENDPOINT='https://api.countapi.xyz/hit/game-of-numbers/sheets-practice-global-visits';
+const GLOBAL_VISITS_ENDPOINT='https://api.countapi.xyz/update/game-of-numbers/sheets-practice-global-visits?amount=1';
 let currentProfile=null;
 const textEncoder=new TextEncoder();
 const textDecoder=new TextDecoder();
@@ -1213,17 +1213,30 @@ function filterRef(){buildRef(document.getElementById('refSearch').value);}
 async function initVisitCounter(){
   const el=document.getElementById('s-visits');
   if(!el)return;
+  const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
   try{
-    const res=await fetch(GLOBAL_VISITS_ENDPOINT,{cache:'no-store'});
-    const data=await res.json();
-    if(typeof data.value!=='number')throw new Error('invalid counter response');
-    el.textContent=data.value.toLocaleString();
-    localStorage.setItem(GLOBAL_VISITS_CACHE_KEY,String(data.value));
-    el.title='Total visits from all users (global counter)';
+    let value=null;
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        const url=`${GLOBAL_VISITS_ENDPOINT}&_=${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const res=await fetch(url,{method:'GET',cache:'no-store',mode:'cors'});
+        if(!res.ok)throw new Error(`HTTP ${res.status}`);
+        const data=await res.json();
+        if(typeof data.value!=='number')throw new Error('invalid counter response');
+        value=data.value;
+        break;
+      }catch(err){
+        if(attempt===2)throw err;
+        await sleep(250*(attempt+1));
+      }
+    }
+    el.textContent=Number(value).toLocaleString();
+    localStorage.setItem(GLOBAL_VISITS_CACHE_KEY,String(value));
+    el.title='Total visits from all users';
   }catch(_){
     const cached=Number(localStorage.getItem(GLOBAL_VISITS_CACHE_KEY)||'0')||0;
-    el.textContent=cached?`${cached.toLocaleString()}~`:'—';
-    el.title='Global counter unavailable right now (~ shows last synced global value)';
+    el.textContent=cached.toLocaleString();
+    el.title='Could not reach global counter right now. Showing last synced total.';
   }
 }
 
