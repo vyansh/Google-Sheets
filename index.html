@@ -677,7 +677,24 @@ td[data-qid]:hover{background:var(--glass-2);}
 }
 @media (max-width:720px){
   .page{margin:10px;padding:10px;}
-  .page::before{top:28px;}
+  .page::before{display:none;}
+  .brand{padding-left:2px;gap:8px;}
+  .brand-badge{
+    width:36px;
+    height:36px;
+    min-width:36px;
+  }
+  .brand-badge .crest{font-size:12px;}
+  .brand-badge .glyph{
+    font-size:11px;
+    margin-left:1px;
+    letter-spacing:0;
+  }
+  .brand h1{
+    font-size:.98rem;
+    letter-spacing:.04em;
+    padding:0 3px;
+  }
   header{position:static;flex-direction:column;align-items:stretch;}
   .head-right{justify-content:space-between;}
   .stats{width:100%;}
