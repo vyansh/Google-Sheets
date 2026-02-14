@@ -86,26 +86,6 @@ header{
   background:transparent;
 }
 .brand{display:flex;align-items:center;gap:10px;min-width:0;padding-left:6px;}
-.brand-badge{
-  width:44px;height:44px;border-radius:999px;
-  display:flex;align-items:center;justify-content:center;gap:1px;
-  border:1px solid var(--line-strong);
-  font-weight:700;
-  background:transparent;
-  position:relative;
-}
-.brand-badge .crest{
-  font-size:15px;
-  line-height:1;
-  transform:translateY(-1px);
-}
-.brand-badge .glyph{
-  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:15px;
-  line-height:1;
-  margin-left:2px;
-  font-weight:800;
-}
 .brand h1{
   font-family:"Cinzel Decorative","Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   font-size:1.2rem;
@@ -675,18 +655,7 @@ td[data-qid]:hover{background:var(--glass-2);}
 @media (max-width:720px){
   .page{margin:10px;padding:10px;}
   .page::before{display:none;}
-  .brand{padding-left:2px;gap:8px;}
-  .brand-badge{
-    width:36px;
-    height:36px;
-    min-width:36px;
-  }
-  .brand-badge .crest{font-size:12px;}
-  .brand-badge .glyph{
-    font-size:11px;
-    margin-left:1px;
-    letter-spacing:0;
-  }
+  .brand{padding-left:2px;gap:0;}
   .brand h1{
     font-size:.98rem;
     letter-spacing:.04em;
@@ -711,7 +680,6 @@ td[data-qid]:hover{background:var(--glass-2);}
 <div class="page">
   <header>
     <div class="brand">
-      <div class="brand-badge" aria-label="Renaissance Logo"><span class="crest">⚜</span><span class="glyph">GN</span></div>
       <h1>Game of Numbers</h1>
     </div>
     <div class="head-right">
