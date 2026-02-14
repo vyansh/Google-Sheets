@@ -567,6 +567,30 @@ td[data-qid]:hover{background:var(--glass-2);}
   color:var(--muted);
   line-height:1.45;
 }
+.profile-tools{
+  margin-top:8px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:.75rem;
+  color:var(--sub);
+  line-height:1.4;
+}
+.profile-recent{
+  margin-top:8px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:.75rem;
+}
+.profile-recent ul{
+  margin-top:6px;
+  padding-left:16px;
+}
+.profile-recent li{
+  margin-bottom:3px;
+  color:var(--sub);
+}
 .modal-head,.modal-search{
   padding:14px 16px;
   border-bottom:1px solid var(--line);
@@ -684,7 +708,7 @@ td[data-qid]:hover{background:var(--glass-2);}
     </div>
     <div class="head-right">
       <div class="stats">
-        <div class="stat stat-eye"><span class="eye-icon">👁</span><strong id="s-visits">—</strong><span>Visits</span></div>
+        <div class="stat stat-eye"><span class="eye-icon">👁</span><strong id="s-visits">—</strong><span>Global Visits</span></div>
         <div class="stat"><strong id="s-total">0</strong><span>Questions</span></div>
         <div class="stat"><strong id="s-done">0</strong><span>Attempted</span></div>
         <div class="stat"><strong id="s-correct">0</strong><span>Correct</span></div>
@@ -755,6 +779,7 @@ td[data-qid]:hover{background:var(--glass-2);}
     <div class="modal-body" id="profileBody"></div>
   </div>
 </div>
+<input type="file" id="vaultBackupInput" accept="application/json" style="display:none" onchange="handleBackupImport(event)">
 
 <div class="toast" id="toast"></div>
 <div class="cursor-invert" id="cursorInvert"></div>
@@ -913,6 +938,8 @@ let activeFilter='all';
 let acIndex=-1;
 const resultState=new Map();
 const PROFILE_DB_KEY='gon_profile_db_v1';
+const GLOBAL_VISITS_CACHE_KEY='gon_global_visits_cache_v1';
+const GLOBAL_VISITS_ENDPOINT='https://api.countapi.xyz/hit/game-of-numbers/sheets-practice-global-visits';
 let currentProfile=null;
 const textEncoder=new TextEncoder();
 const textDecoder=new TextDecoder();
@@ -1187,15 +1214,16 @@ async function initVisitCounter(){
   const el=document.getElementById('s-visits');
   if(!el)return;
   try{
-    const res=await fetch('https://api.countapi.xyz/hit/game-of-numbers/sheets-practice-visits',{cache:'no-store'});
+    const res=await fetch(GLOBAL_VISITS_ENDPOINT,{cache:'no-store'});
     const data=await res.json();
     if(typeof data.value!=='number')throw new Error('invalid counter response');
     el.textContent=data.value.toLocaleString();
+    localStorage.setItem(GLOBAL_VISITS_CACHE_KEY,String(data.value));
+    el.title='Total visits from all users (global counter)';
   }catch(_){
-    const local=(Number(localStorage.getItem('gon_visits_local')||'0')||0)+1;
-    localStorage.setItem('gon_visits_local',String(local));
-    el.textContent=`${local.toLocaleString()}*`;
-    el.title='Local fallback counter (*): network unavailable';
+    const cached=Number(localStorage.getItem(GLOBAL_VISITS_CACHE_KEY)||'0')||0;
+    el.textContent=cached?`${cached.toLocaleString()}~`:'—';
+    el.title='Global counter unavailable right now (~ shows last synced global value)';
   }
 }
 
@@ -1259,11 +1287,38 @@ function profileMetrics(data){
   const solved=entries.filter(x=>x&&x.solved).length;
   const totalChecks=data.totalChecks||entries.reduce((s,e)=>s+(e?.attempts||0),0);
   const accuracy=attempted?Math.round((solved/attempted)*100):0;
-  return {attempted,solved,totalChecks,accuracy};
+  const streak=profileStreakDays(data);
+  return {attempted,solved,totalChecks,accuracy,streak};
+}
+function profileStreakDays(data){
+  const entries=Object.values(data.answers||{}).filter(x=>x&&x.updatedAt);
+  if(!entries.length)return 0;
+  const daySet=new Set(entries.map(e=>{
+    const d=new Date(e.updatedAt);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;
+  }));
+  let streak=0;
+  let cur=new Date();
+  while(true){
+    const key=`${cur.getUTCFullYear()}-${String(cur.getUTCMonth()+1).padStart(2,'0')}-${String(cur.getUTCDate()).padStart(2,'0')}`;
+    if(daySet.has(key)){
+      streak++;
+      cur.setUTCDate(cur.getUTCDate()-1);
+      continue;
+    }
+    if(streak===0){
+      cur.setUTCDate(cur.getUTCDate()-1);
+      const yKey=`${cur.getUTCFullYear()}-${String(cur.getUTCMonth()+1).padStart(2,'0')}-${String(cur.getUTCDate()).padStart(2,'0')}`;
+      if(daySet.has(yKey))streak=1;
+    }
+    break;
+  }
+  return streak;
 }
 function profileBadges(metrics){
   const badges=[];
   if(metrics.attempted>=1)badges.push('Ink Starter');
+  if(metrics.streak>=3)badges.push('Night Owl Streak');
   if(metrics.solved>=10)badges.push('Ledger Knight');
   if(metrics.solved>=25)badges.push('Formula Baron');
   if(metrics.solved>=50)badges.push('Alchemist of Numbers');
@@ -1290,7 +1345,7 @@ function updateProfileHud(){
   }
   const m=profileMetrics(currentProfile.data);
   btn.textContent=`${currentProfile.name} • Vault`;
-  fun.textContent=`Captain ${currentProfile.name}, you solved ${m.solved}/${QUESTIONS.length} scrolls with ${m.accuracy}% accuracy. Rank: ${profileRank(m)}.`;
+  fun.textContent=`Captain ${currentProfile.name}, you solved ${m.solved}/${QUESTIONS.length} scrolls with ${m.accuracy}% accuracy. Rank: ${profileRank(m)}. Streak: ${m.streak} day${m.streak===1?'':'s'}.`;
 }
 function hydrateFromCurrentProfile(){
   resultState.clear();
@@ -1334,6 +1389,20 @@ async function recordProfileAttempt(qid,formula,correct,output){
   await persistCurrentProfile();
   updateProfileHud();
 }
+function getRecentAttempts(data,limit=5){
+  const attempts=Object.entries(data.answers||{}).map(([qid,val])=>({
+    qid:Number(qid),
+    solved:!!val?.solved,
+    attempts:val?.attempts||0,
+    updatedAt:val?.updatedAt||0
+  })).filter(x=>x.updatedAt).sort((a,b)=>b.updatedAt-a.updatedAt);
+  return attempts.slice(0,limit);
+}
+function fmtDateShort(ts){
+  try{
+    return new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  }catch{return '';}
+}
 function openProfile(){
   renderProfileModal();
   document.getElementById('profileModal').classList.add('open');
@@ -1347,16 +1416,18 @@ function renderProfileModal(){
   if(!currentProfile){
     body.innerHTML=`<div class="profile-panel"><h4>Enter The Vault</h4>
       <form class="profile-form" onsubmit="event.preventDefault();profileAuth();">
-        <input id="profileName" placeholder="Choose profile name" maxlength="28" autocomplete="username">
-        <input id="profileSecret" placeholder="Secret phrase (used for encryption)" type="password" autocomplete="current-password">
+        <input id="profileName" placeholder="Profile name (case-sensitive)" maxlength="28" autocomplete="username">
+        <input id="profileSecret" placeholder="Secret phrase (case-sensitive)" type="password" autocomplete="current-password">
         <button class="btn btn-check" type="submit">Open Vault</button>
       </form>
-      <div id="profileAuthMsg" class="profile-privacy">Your answers are encrypted locally in this browser. We do not upload your formulas.</div>
+      <div id="profileAuthMsg" class="profile-privacy">Case-sensitive warning: profile name and secret phrase must match exact uppercase/lowercase letters. Your answers are encrypted locally in this browser and not uploaded.</div>
+      <div class="profile-tools">Vault tools once logged in: streak tracking, recent activity feed, encrypted backup export/import, and reset progress.</div>
     </div>`;
     return;
   }
   const m=profileMetrics(currentProfile.data);
   const badges=profileBadges(m);
+  const recent=getRecentAttempts(currentProfile.data,6);
   body.innerHTML=`<div class="profile-panel">
     <h4>Welcome, ${escapeHtml(currentProfile.name)}</h4>
     <div class="profile-grid">
@@ -1364,11 +1435,20 @@ function renderProfileModal(){
       <div class="profile-chip"><strong>${m.attempted}</strong> attempted</div>
       <div class="profile-chip"><strong>${m.accuracy}%</strong> accuracy</div>
       <div class="profile-chip"><strong>${m.totalChecks}</strong> total checks</div>
+      <div class="profile-chip"><strong>${m.streak}</strong> day streak</div>
+      <div class="profile-chip"><strong>${profileRank(m)}</strong> rank</div>
     </div>
     <div class="profile-badges">${badges.map(b=>`<span class="profile-badge">${escapeHtml(b)}</span>`).join('')}</div>
-    <div class="profile-privacy">Privacy mode: your progress is encrypted with your secret phrase and stored in your browser only. No personal data leaves your device.</div>
+    <div class="profile-recent"><strong>Recent Activity</strong>
+      <ul>${recent.length?recent.map(r=>`<li>Q${r.qid} • ${r.solved?'Solved':'Tried'} • ${r.attempts} checks • ${fmtDateShort(r.updatedAt)}</li>`).join(''):'<li>No attempts yet.</li>'}</ul>
+    </div>
+    <div class="profile-tools">Case-sensitive vault: keep your exact profile name and secret phrase safe. Export backups are encrypted and can only be opened with the same phrase.</div>
+    <div class="profile-privacy">Privacy mode: progress is encrypted with your secret phrase and stored in your browser only. No personal data leaves your device.</div>
     <div class="btn-row">
       <button class="btn" onclick="logoutProfile()">Lock Vault</button>
+      <button class="btn" onclick="downloadVaultBackup()">Export Backup</button>
+      <button class="btn" onclick="triggerVaultImport()">Import Backup</button>
+      <button class="btn" onclick="resetVaultProgress()">Reset Progress</button>
       <button class="btn btn-check" onclick="switchProfile()">Use Another Profile</button>
     </div>
   </div>`;
@@ -1402,7 +1482,7 @@ async function profileAuth(){
     renderProfileModal();
     showToast(`Vault opened for ${name}.`);
   }catch(_){
-    if(msg)msg.textContent='Wrong secret phrase for this profile.';
+    if(msg)msg.textContent='Wrong secret phrase for this profile (case-sensitive).';
   }
 }
 function logoutProfile(){
@@ -1425,6 +1505,80 @@ function switchProfile(){
   renderAll();
   updateProfileHud();
   renderProfileModal();
+}
+function downloadVaultBackup(){
+  if(!currentProfile)return;
+  const db=readProfileDb();
+  const bundle=db[currentProfile.name];
+  if(!bundle){
+    showToast('No vault data found to export.');
+    return;
+  }
+  const payload={
+    version:1,
+    profileName:currentProfile.name,
+    exportedAt:Date.now(),
+    encryptedBundle:bundle
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`gon-vault-${currentProfile.name.replace(/[^a-z0-9_-]/gi,'_').toLowerCase()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Encrypted backup exported.');
+}
+function triggerVaultImport(){
+  const input=document.getElementById('vaultBackupInput');
+  if(!input)return;
+  input.value='';
+  input.click();
+}
+async function handleBackupImport(event){
+  const file=event?.target?.files?.[0];
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const parsed=JSON.parse(text);
+    const name=(parsed.profileName||'').trim();
+    const bundle=parsed.encryptedBundle;
+    if(!name||!bundle||!bundle.salt||!bundle.iv||!bundle.cipher)throw new Error('Invalid backup file format');
+    const db=readProfileDb();
+    db[name]=bundle;
+    writeProfileDb(db);
+    showToast(`Backup imported for ${name}. Open vault with exact case-sensitive credentials.`);
+    if(currentProfile&&currentProfile.name===name){
+      try{
+        const refreshed=await decryptProfileData(bundle,currentProfile.secret);
+        currentProfile.data=refreshed;
+        hydrateFromCurrentProfile();
+        renderProfileModal();
+      }catch(_){
+        showToast('Backup imported. Re-open vault with the matching secret phrase.');
+      }
+    }
+  }catch(_){
+    showToast('Import failed. Use a valid vault backup file.');
+  }finally{
+    const input=document.getElementById('vaultBackupInput');
+    if(input)input.value='';
+  }
+}
+async function resetVaultProgress(){
+  if(!currentProfile)return;
+  if(!confirm('Reset all saved progress for this vault profile?'))return;
+  currentProfile.data.answers={};
+  currentProfile.data.totalChecks=0;
+  currentProfile.data.lastSeen=Date.now();
+  const metrics=profileMetrics(currentProfile.data);
+  currentProfile.data.badges=profileBadges(metrics);
+  await persistCurrentProfile();
+  hydrateFromCurrentProfile();
+  renderProfileModal();
+  showToast('Vault progress reset.');
 }
 
 function escapeHtml(s){
