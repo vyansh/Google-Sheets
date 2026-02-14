@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game of Numbers</title>
 <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=IM+Fell+English+SC&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -25,24 +25,33 @@
   --radius:16px;
 }
 html[data-theme="light"]{
-  --bg:#f3f3f3;
-  --panel:#f8f8f8;
+  --bg:#efefef;
+  --panel:#f6f6f6;
   --card:#ffffff;
-  --text:#000000;
-  --sub:#1f1f1f;
-  --muted:#4e4e4e;
-  --line:rgba(0,0,0,.25);
-  --line-strong:rgba(0,0,0,.42);
-  --glass:rgba(0,0,0,.015);
-  --glass-2:rgba(0,0,0,.03);
+  --text:#050505;
+  --sub:#232323;
+  --muted:#4a4a4a;
+  --line:rgba(0,0,0,.3);
+  --line-strong:rgba(0,0,0,.5);
+  --glass:rgba(0,0,0,.025);
+  --glass-2:rgba(0,0,0,.05);
   --accent:#000000;
 }
 body{
   font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:var(--bg);
+  background:
+    radial-gradient(1200px 520px at 8% -20%, rgba(255,184,112,.09), transparent 62%),
+    radial-gradient(900px 380px at 90% 0%, rgba(240,154,96,.05), transparent 70%),
+    var(--bg);
   color:var(--text);
   min-height:100vh;
   letter-spacing:.01em;
+}
+html[data-theme="light"] body{
+  background:
+    radial-gradient(980px 420px at 8% -20%, rgba(0,0,0,.08), transparent 66%),
+    radial-gradient(760px 340px at 92% 8%, rgba(0,0,0,.055), transparent 72%),
+    linear-gradient(180deg,var(--bg),var(--panel));
 }
 .page{
   max-width:1380px;
@@ -59,6 +68,14 @@ body{
   left:0;right:0;top:82px;
   border-top:1px solid var(--line);
 }
+.page::after{
+  content:"❦";
+  position:absolute;
+  top:10px;
+  right:14px;
+  font-size:13px;
+  color:var(--muted);
+}
 header{
   position:sticky;
   top:8px;
@@ -71,11 +88,6 @@ header{
   margin-bottom:12px;
   background:transparent;
 }
-.window-dots{display:flex;gap:7px;align-items:center;padding-left:2px;}
-.window-dots span{
-  width:9px;height:9px;border-radius:50%;
-  border:1px solid var(--line-strong);display:block;
-}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;padding-left:6px;}
 .brand-badge{
   width:44px;height:44px;border-radius:999px;
@@ -85,22 +97,27 @@ header{
   background:transparent;
   position:relative;
 }
-.brand-badge .skull{
-  font-size:14px;line-height:1;transform:translateY(-1px);
+.brand-badge .crest{
+  font-size:15px;
+  line-height:1;
+  transform:translateY(-1px);
 }
-.brand-badge .digit{
-  font-family:"IM Fell English SC","Cinzel Decorative",serif;
-  font-size:18px;line-height:1;
+.brand-badge .glyph{
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1;
+  margin-left:2px;
+  font-weight:800;
 }
 .brand h1{
-  font-family:"Cinzel Decorative","IM Fell English SC",serif;
-  font-size:1.24rem;
+  font-family:"Cinzel Decorative","Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:1.2rem;
   font-weight:700;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   text-transform:uppercase;
-  letter-spacing:.06em;
+  letter-spacing:.08em;
   background:var(--panel);
   padding:0 6px;
   position:relative;
@@ -118,48 +135,186 @@ header{
   gap:7px;
   align-items:center;
 }
-.stat strong{font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text);}
+.stat strong{font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);}
+.stat-eye .eye-icon{
+  display:inline-block;
+  animation:eyePulse 1.8s ease-in-out infinite;
+}
+@keyframes eyePulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.18);}
+}
+.profile-btn{
+  border:1px solid var(--line-strong);
+  background:transparent;
+  color:var(--text);
+  padding:9px 14px;
+  border-radius:999px;
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.02em;
+  cursor:pointer;
+  white-space:nowrap;
+}
 
 .lamp-toggle{
   position:relative;
-  border:1px solid var(--line-strong);
-  cursor:pointer;
-  width:62px;
-  height:36px;
-  border-radius:999px;
-  background:transparent;
+  width:64px;
+  height:62px;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  padding:3px;
+  justify-content:flex-start;
+  margin-left:2px;
 }
-.lamp-knob{
-  width:28px;height:28px;border-radius:50%;
-  position:relative;
-  transition:transform .24s ease;
+.lamp-head{
+  width:36px;
+  height:18px;
   border:1px solid var(--line-strong);
+  border-bottom:none;
+  border-radius:16px 16px 6px 6px;
+  background:var(--glass);
+  position:relative;
+}
+.lamp-head::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:10px;
+  width:78px;
+  height:56px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 15%, rgba(255,226,175,.38), rgba(255,177,99,.15) 48%, rgba(255,130,55,.06) 74%, transparent 100%);
+  filter:blur(5px);
+  opacity:.95;
+}
+.lamp-head::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:14px;
+  width:12px;
+  height:4px;
+  border:1px solid var(--line-strong);
+  border-top:none;
+  border-radius:0 0 4px 4px;
+}
+.lamp-chain{
+  position:absolute;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+  background:transparent;
+  border:none;
+  width:26px;
+  height:44px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:0;
+  transition:transform .2s cubic-bezier(.19,.75,.31,1.35);
+}
+.lamp-chain .chain-string{
+  width:1px;
+  height:24px;
+  background:var(--line-strong);
+}
+.lamp-chain .chain-pull{
+  width:12px;
+  height:12px;
+  border:1px solid var(--line-strong);
+  border-radius:50%;
   background:var(--card);
 }
-.lamp-knob::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:4px;
-  transform:translateX(-50%);
-  width:10px;height:10px;border-radius:6px 6px 3px 3px;
-  border:1px solid var(--line);
+.lamp-chain.pulling{
+  transform:translateX(-50%) translateY(9px);
 }
-.lamp-knob::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:15px;
-  transform:translateX(-50%);
-  width:12px;height:7px;border-radius:5px;
-  border:1px solid var(--line);
+.lamp-chain:focus-visible{
+  outline:2px solid var(--line-strong);
+  outline-offset:3px;
+  border-radius:10px;
 }
-html[data-theme="light"] .lamp-knob{transform:translateX(27px);}
+html[data-theme="dark"] .lamp-head{
+  box-shadow:
+    0 0 14px rgba(255,196,118,.38),
+    0 0 26px rgba(255,150,79,.18);
+  border-color:rgba(255,222,165,.62);
+}
+html[data-theme="dark"] .lamp-chain .chain-pull{
+  border-color:rgba(255,214,150,.7);
+  box-shadow:0 0 10px rgba(255,184,106,.34);
+}
+html[data-theme="light"] .lamp-head::before{
+  opacity:.55;
+}
 
-main{display:grid;gap:14px;padding-top:8px;}
+main{padding-top:8px;}
+.main-shell{
+  display:grid;
+  grid-template-columns:300px minmax(0,1fr);
+  gap:14px;
+  align-items:start;
+}
+.workspace{
+  display:grid;
+  gap:14px;
+}
+.resources-tab{
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--glass);
+  padding:12px;
+  position:sticky;
+  top:96px;
+}
+.resources-tab h3{
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:1rem;
+  letter-spacing:.04em;
+  margin-bottom:8px;
+  font-weight:800;
+}
+.resources-tab p{
+  color:var(--sub);
+  font-size:.82rem;
+  line-height:1.5;
+  margin-bottom:8px;
+}
+.resource-list{
+  display:grid;
+  gap:8px;
+  margin-top:8px;
+}
+.resource-link{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 10px;
+  text-decoration:none;
+  color:var(--text);
+  font-size:.82rem;
+  background:transparent;
+}
+.resource-link small{
+  display:block;
+  color:var(--muted);
+  font-size:.72rem;
+  margin-top:3px;
+}
+.profile-fun{
+  margin-top:10px;
+  border:1px dashed var(--line);
+  border-radius:10px;
+  padding:9px 10px;
+  color:var(--sub);
+  font-size:.8rem;
+  line-height:1.45;
+}
 .progress{height:3px;border-radius:999px;overflow:hidden;background:var(--line);}
 .progress > div{height:100%;width:0;background:var(--text);transition:width .25s ease;}
 
@@ -239,6 +394,21 @@ main{display:grid;gap:14px;padding-top:8px;}
   font-weight:700;
   font-size:.78rem;
   border:1px solid var(--line);
+  transition:box-shadow .25s ease, background .25s ease, border-color .25s ease, color .25s ease;
+}
+html[data-theme="dark"] .q-num{
+  color:#fff6e3;
+  border-color:rgba(255,213,146,.74);
+  background:radial-gradient(circle at 28% 18%, rgba(255,243,212,.72), rgba(255,204,128,.42) 42%, rgba(255,157,79,.22) 70%, rgba(255,132,58,.1) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,224,171,.28),
+    0 0 18px rgba(255,195,108,.45),
+    0 0 32px rgba(255,160,82,.24);
+}
+html[data-theme="light"] .q-num{
+  color:var(--text);
+  background:linear-gradient(180deg, rgba(0,0,0,.035), rgba(0,0,0,.01));
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);
 }
 .q-status{flex:1;min-width:90px;font-size:.8rem;color:var(--muted);}
 .diff{
@@ -280,7 +450,7 @@ td[data-qid]:hover{background:var(--glass-2);}
 .refbox,.fx{
   padding:9px 10px;
   border-right:1px solid var(--line);
-  font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 .refbox{min-width:60px;text-align:center;color:var(--text);background:var(--glass);}
 .fx{font-style:italic;color:var(--muted);}
@@ -292,7 +462,8 @@ td[data-qid]:hover{background:var(--glass-2);}
   background:transparent;
   color:var(--text);
   outline:none;
-  font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:500;
 }
 .formula-input::placeholder{color:var(--muted);}
 
@@ -319,7 +490,7 @@ td[data-qid]:hover{background:var(--glass-2);}
 .ac-item:last-child{border-bottom:none;}
 .ac-item.sel,.ac-item:hover{background:var(--glass);}
 .ac-name{
-  font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   color:var(--text);
   font-weight:700;
 }
@@ -363,6 +534,62 @@ td[data-qid]:hover{background:var(--glass-2);}
   background:var(--panel);
   overflow:hidden;
 }
+.profile-modal{max-width:560px;}
+.profile-panel{
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:11px;
+  background:var(--glass);
+}
+.profile-panel h4{
+  font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:.92rem;
+  margin-bottom:7px;
+  font-weight:800;
+}
+.profile-form{
+  display:grid;
+  gap:9px;
+}
+.profile-form input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+}
+.profile-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:9px;
+}
+.profile-chip{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 10px;
+  font-size:.78rem;
+}
+.profile-badges{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.profile-badge{
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:.72rem;
+  color:var(--sub);
+}
+.profile-privacy{
+  margin-top:8px;
+  font-size:.76rem;
+  color:var(--muted);
+  line-height:1.45;
+}
 .modal-head,.modal-search{
   padding:14px 16px;
   border-bottom:1px solid var(--line);
@@ -400,9 +627,9 @@ td[data-qid]:hover{background:var(--glass-2);}
 }
 .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
 .ref-item{border:1px solid var(--line);border-radius:10px;padding:9px;background:var(--glass);}
-.ref-item-name{font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text);font-weight:700;font-size:.84rem;}
+.ref-item-name{font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);font-weight:700;font-size:.84rem;}
 .ref-item-desc{color:var(--sub);font-size:.78rem;margin-top:3px;}
-.ref-item-syn{color:var(--muted);font-size:.73rem;margin-top:5px;font-family:"SF Mono",ui-monospace,SFMono-Regular,Menlo,monospace;}
+.ref-item-syn{color:var(--muted);font-size:.73rem;margin-top:5px;font-family:"Satoshi","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
 
 .toast{
   position:fixed;
@@ -440,6 +667,8 @@ td[data-qid]:hover{background:var(--glass-2);}
 }
 
 @media (max-width:1040px){
+  .main-shell{grid-template-columns:1fr;}
+  .resources-tab{position:static;}
   .controls{grid-template-columns:1fr 1fr;}
   .btn-ref{grid-column:1/-1;justify-self:start;}
 }
@@ -453,11 +682,13 @@ td[data-qid]:hover{background:var(--glass-2);}
   .head-right{justify-content:space-between;}
   .stats{width:100%;}
   .stat{flex:1;justify-content:center;min-width:120px;}
+  .profile-btn{width:100%;}
   .controls{grid-template-columns:1fr;}
   .ac-item{grid-template-columns:1fr;gap:3px;}
   .formula-top{flex-wrap:wrap;}
   .refbox,.fx{border-bottom:1px solid var(--line);}
   .formula-input{width:100%;}
+  .profile-grid{grid-template-columns:1fr;}
   .cursor-invert{display:none !important;}
 }
 </style>
@@ -465,39 +696,60 @@ td[data-qid]:hover{background:var(--glass-2);}
 <body>
 <div class="page">
   <header>
-    <div class="window-dots"><span></span><span></span><span></span></div>
     <div class="brand">
-      <div class="brand-badge" aria-label="Pirate Number Logo"><span class="skull">☠</span><span class="digit">7</span></div>
+      <div class="brand-badge" aria-label="Renaissance Logo"><span class="crest">⚜</span><span class="glyph">GN</span></div>
       <h1>Game of Numbers</h1>
     </div>
     <div class="head-right">
       <div class="stats">
+        <div class="stat stat-eye"><span class="eye-icon">👁</span><strong id="s-visits">—</strong><span>Visits</span></div>
         <div class="stat"><strong id="s-total">0</strong><span>Questions</span></div>
         <div class="stat"><strong id="s-done">0</strong><span>Attempted</span></div>
         <div class="stat"><strong id="s-correct">0</strong><span>Correct</span></div>
         <div class="stat"><strong id="s-pct">—</strong><span>Accuracy</span></div>
       </div>
-      <button class="lamp-toggle" id="themeToggle" title="Toggle light/dark theme" aria-label="Toggle light and dark mode">
-        <span class="lamp-knob"></span>
-      </button>
+      <button class="profile-btn" id="profileBtn" onclick="openProfile()">Profile Vault</button>
+      <div class="lamp-toggle" aria-hidden="true">
+        <div class="lamp-head"></div>
+        <button class="lamp-chain" id="themeToggle" title="Pull chain to switch theme" aria-label="Pull lamp chain to switch light and dark mode">
+          <span class="chain-string"></span>
+          <span class="chain-pull"></span>
+        </button>
+      </div>
     </div>
   </header>
 
   <main>
-    <div class="progress"><div id="prog"></div></div>
-    <section class="controls">
-      <div class="filters" id="filters">
-        <button class="pill active" data-f="all">All</button>
-        <button class="pill" data-f="easy">Easy</button>
-        <button class="pill" data-f="medium">Medium</button>
-        <button class="pill" data-f="hard">Hard</button>
-        <button class="pill" data-f="expert">Expert</button>
-      </div>
-      <div class="search"><input id="search" type="text" placeholder="Search questions..."></div>
-      <button class="btn-ref" onclick="openRef()">Formula Reference</button>
-    </section>
+    <div class="main-shell">
+      <aside class="resources-tab">
+        <h3>Resources</h3>
+        <p>Renaissance study desk for Google Sheets mastery. Pick a lesson and practice on the right.</p>
+        <div class="resource-list">
+          <a class="resource-link" href="https://www.w3schools.com/excel/index.php" target="_blank" rel="noopener noreferrer">W3Schools Spreadsheets<small>Foundations and formula references.</small></a>
+          <a class="resource-link" href="https://support.google.com/docs/topic/1382883" target="_blank" rel="noopener noreferrer">Google Official Docs<small>Functions, formulas, and product help.</small></a>
+          <a class="resource-link" href="https://www.youtube.com/results?search_query=google+sheets+formulas+tutorial" target="_blank" rel="noopener noreferrer">YouTube Formula Tutorials<small>Video walkthroughs and tricks.</small></a>
+          <a class="resource-link" href="https://www.benlcollins.com/spreadsheets/google-sheets-formulas-techniques/" target="_blank" rel="noopener noreferrer">Ben Collins Guides<small>Advanced tactics and productivity hacks.</small></a>
+          <a class="resource-link" href="https://www.youtube.com/results?search_query=google+sheets+tips+and+tricks" target="_blank" rel="noopener noreferrer">Sheets Tips & Tricks Playlist<small>Short practical improvements.</small></a>
+        </div>
+        <div class="profile-fun" id="profileFun">Sign in to your private vault and track your progress like a royal ledger keeper.</div>
+      </aside>
 
-    <section class="q-grid" id="qgrid"></section>
+      <section class="workspace">
+        <div class="progress"><div id="prog"></div></div>
+        <section class="controls">
+          <div class="filters" id="filters">
+            <button class="pill active" data-f="all">All</button>
+            <button class="pill" data-f="easy">Easy</button>
+            <button class="pill" data-f="medium">Medium</button>
+            <button class="pill" data-f="hard">Hard</button>
+            <button class="pill" data-f="expert">Expert</button>
+          </div>
+          <div class="search"><input id="search" type="text" placeholder="Search questions..."></div>
+          <button class="btn-ref" onclick="openRef()">Formula Reference</button>
+        </section>
+        <section class="q-grid" id="qgrid"></section>
+      </section>
+    </div>
   </main>
 </div>
 
@@ -509,6 +761,16 @@ td[data-qid]:hover{background:var(--glass-2);}
     </div>
     <div class="modal-search"><input id="refSearch" type="text" placeholder="Search formulas" oninput="filterRef()"></div>
     <div class="modal-body" id="refBody"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="profileModal" onclick="if(event.target===this)closeProfile()">
+  <div class="modal profile-modal">
+    <div class="modal-head">
+      <h2>Player Vault</h2>
+      <button class="modal-close" onclick="closeProfile()">✕</button>
+    </div>
+    <div class="modal-body" id="profileBody"></div>
   </div>
 </div>
 
@@ -612,10 +874,66 @@ const QUESTIONS=[
   {id:40,diff:"expert",scenario:"Create monthly growth % for first row: (Current-Previous)/Previous using B2 and C2.",data:[["Month","Previous","Current","Growth"],["Jan","10000","11250",""] ,["Feb","11250","12150",""] ,["Mar","12150","11800",""]],expected:0.125,hint:"Compute percentage change from previous to current.",expl:"(11250-10000)/10000 = 0.125."}
 ];
 
+function makeGeneratedQuestion(id){
+  const diff=['easy','medium','hard','expert'][id%4];
+  const idx=(id-41)%10;
+  const k=id*3;
+
+  if(idx===0){
+    const q1=120+k,q2=145+k,q3=132+k,q4=150+k;
+    return {id,diff,scenario:`Challenge ${id}: In the royal ledger, compute total annual sales for the first region from Q1 to Q4.`,data:[["Region","Q1","Q2","Q3","Q4","Total"],["North",String(q1),String(q2),String(q3),String(q4),""],["South",String(q1-32),String(q2-28),String(q3-36),String(q4-30),""]],expected:q1+q2+q3+q4,hint:"Add Q1 through Q4 for row 2.",expl:"Any correct total formula for row 2 is accepted."};
+  }
+  if(idx===1){
+    const a=70+(k%11),b=76+(k%13),c=81+(k%9),d=74+(k%7);
+    return {id,diff,scenario:`Challenge ${id}: Find the average score for the first scholar across four tests.`,data:[["Student","Test 1","Test 2","Test 3","Test 4","Average"],["Aria",String(a),String(b),String(c),String(d),""],["Bryn",String(a-5),String(b-3),String(c-2),String(d-1),""]],expected:(a+b+c+d)/4,hint:"Average columns B:E for row 2.",expl:"Use AVERAGE or equivalent math expression."};
+  }
+  if(idx===2){
+    const s=["Completed","Pending","Completed","Cancelled","Completed","Pending","Completed"];
+    return {id,diff,scenario:`Challenge ${id}: Count how many tasks are marked 'Completed'.`,data:[["Task","Status"],["T-01",s[0]],["T-02",s[1]],["T-03",s[2]],["T-04",s[3]],["T-05",s[4]],["T-06",s[5]],["T-07",s[6]]],expected:4,hint:"Count rows where Status equals Completed.",expl:"COUNTIF/COUNTIFS/SUMPRODUCT approaches all work."};
+  }
+  if(idx===3){
+    const t1=200+k,t2=90+k,t3=160+k,t4=110+k;
+    return {id,diff,scenario:`Challenge ${id}: Sum revenue for category 'Tools' only.`,data:[["Item","Category","Revenue"],["Hammer","Tools",String(t1)],["Lamp","Home",String(t2)],["Saw","Tools",String(t3)],["Plate","Kitchen",String(t4)],["Drill","Tools",String(t2+40)]],expected:t1+t3+(t2+40),hint:"Use a conditional sum by category.",expl:"Only rows with Tools should be included."};
+  }
+  if(idx===4){
+    const score=58+(id%45);
+    return {id,diff,scenario:`Challenge ${id}: Classify the first apprentice as 'Pass' if score >= 70 else 'Review'.`,data:[["Apprentice","Score","Result"],["Elio",String(score),""],["Mira",String(score+5),""],["Nora",String(score-8),""]],expected:score>=70?"Pass":"Review",hint:"Use IF with a threshold of 70.",expl:"Evaluate only the first row result."};
+  }
+  if(idx===5){
+    const code=`ARC-${1000+id}`;
+    return {id,diff,scenario:`Challenge ${id}: Extract the 3-letter prefix from the first artifact code.`,data:[["Artifact Code","Prefix"],[code,""],[`GLD-${1200+id}`,""],[`MTH-${1400+id}`,""]],expected:code.slice(0,3),hint:"Pull leftmost 3 characters.",expl:"LEFT or equivalent extraction works."};
+  }
+  if(idx===6){
+    const inv=`INV-${8100+id}`;
+    return {id,diff,scenario:`Challenge ${id}: Extract the last 4 digits from the first invoice code.`,data:[["Invoice","Last 4"],[inv,""],[`INV-${9200+id}`,""],[`INV-${7300+id}`,""]],expected:inv.slice(-4),hint:"Extract fixed length text from the right side.",expl:"RIGHT/MID solutions are both valid."};
+  }
+  if(idx===7){
+    const code=`LOT-${200+id}`;
+    return {id,diff,scenario:`Challenge ${id}: Find the position of '-' in the first lot code.`,data:[["Lot Code","Hyphen Pos"],[code,""],[`BOX-${300+id}`,""],[`TAG-${400+id}`,""]],expected:4,hint:"Use FIND/SEARCH for a single character.",expl:"The dash appears at position 4."};
+  }
+  if(idx===8){
+    const name=(id%2===0)?"luna.crest":"orion.flint";
+    const email=`${name}@guildhall.academy.org`;
+    return {id,diff,scenario:`Challenge ${id}: Extract the department from the first email (between @ and first dot).`,data:[["Name","Email","Department"],["Scholar 1",email,""],["Scholar 2",`mira.quill@archives.academy.org`,""],["Scholar 3",`tariq.ward@alchemy.academy.org`,""]],expected:"guildhall",hint:"Take text after @ and before the next dot.",expl:"TEXTAFTER/TEXTBEFORE or regex-based methods are valid."};
+  }
+
+  const month=(id%12)+1;
+  const d=`2025-${String(month).padStart(2,'0')}-14`;
+  const endDate=new Date(Date.UTC(2025,month,0));
+  const out=`${endDate.getUTCFullYear()}-${String(endDate.getUTCMonth()+1).padStart(2,'0')}-${String(endDate.getUTCDate()).padStart(2,'0')}`;
+  return {id,diff,scenario:`Challenge ${id}: Return the month-end date for the first transaction date.`,data:[["Transaction","Date","Month End"],["TX-01",d,""],["TX-02","2025-02-18",""],["TX-03","2025-07-05",""]],expected:out,hint:"Use month-end date logic.",expl:"EOMONTH or equivalent date arithmetic works."};
+}
+
+for(let id=QUESTIONS.length+1;id<=100;id++)QUESTIONS.push(makeGeneratedQuestion(id));
+
 let stats={done:0,correct:0};
 let activeFilter='all';
 let acIndex=-1;
 const resultState=new Map();
+const PROFILE_DB_KEY='gon_profile_db_v1';
+let currentProfile=null;
+const textEncoder=new TextEncoder();
+const textDecoder=new TextDecoder();
 
 function colLetter(i){
   let n=i+1, s='';
@@ -685,11 +1003,30 @@ function renderAll(){
   });
   grid.innerHTML=filtered.map(buildCard).join('');
   bindCells();
+  applySavedCardStates();
 }
 
 function bindCells(){
   document.querySelectorAll('td[data-qid]').forEach(td=>{
     td.addEventListener('click',()=>insertRef(parseInt(td.dataset.qid,10),td.dataset.ref,td));
+  });
+}
+
+function applySavedCardStates(){
+  resultState.forEach((isSolved,qid)=>{
+    const status=document.getElementById(`status-${qid}`);
+    const card=document.getElementById(`card-${qid}`);
+    if(!status||!card)return;
+    card.classList.remove('correct','wrong');
+    if(isSolved){
+      status.textContent='Solved';
+      status.style.color='var(--good)';
+      card.classList.add('correct');
+    }else{
+      status.textContent='Attempted';
+      status.style.color='var(--muted)';
+      card.classList.add('wrong');
+    }
   });
 }
 
@@ -804,13 +1141,14 @@ function checkAnswer(qid){
   }
 
   const prev=resultState.get(qid);
+  const solvedNow=correct||prev===true;
   if(prev===undefined)stats.done++;
-  if(correct&&prev!==true)stats.correct++;
-  if(!correct&&prev===true)stats.correct--;
-  resultState.set(qid,correct);
+  if(solvedNow&&prev!==true)stats.correct++;
+  resultState.set(qid,solvedNow);
   updateStats();
 
-  const userRes=err?`Error: ${escapeHtml(err)}`:escapeHtml(formatValueForUser(computed));
+  const rawUserRes=err?`Error: ${err}`:formatValueForUser(computed);
+  const userRes=escapeHtml(rawUserRes);
   const exp=(q.expected==='dynamic')?'a valid dynamic result':escapeHtml(formatValueForUser(q.expected));
 
   if(correct){
@@ -820,6 +1158,12 @@ function checkAnswer(qid){
     status.style.color='var(--good)';
     card.classList.add('correct');card.classList.remove('wrong');
     showToast('Correct output. Nice work.');
+  }else if(prev===true){
+    fb.className='feedback show no';
+    fb.innerHTML=`<strong>Almost</strong>Your latest try was <code>${userRes}</code>, but this question is already unlocked in your progress vault.`;
+    status.textContent='Solved';
+    status.style.color='var(--good)';
+    card.classList.add('correct');card.classList.remove('wrong');
   }else{
     fb.className='feedback show no';
     fb.innerHTML=`<strong>Not correct yet</strong>Your result: <code>${userRes}</code><br>Expected output: <code>${exp}</code><br>${escapeHtml(q.expl)}`;
@@ -827,6 +1171,7 @@ function checkAnswer(qid){
     status.style.color='var(--bad)';
     card.classList.add('wrong');card.classList.remove('correct');
   }
+  void recordProfileAttempt(qid,formula,correct,rawUserRes);
 }
 
 function updateStats(){
@@ -855,6 +1200,250 @@ function buildRef(term=''){
 function openRef(){document.getElementById('refModal').classList.add('open');buildRef(document.getElementById('refSearch').value);}
 function closeRef(){document.getElementById('refModal').classList.remove('open');}
 function filterRef(){buildRef(document.getElementById('refSearch').value);}
+
+async function initVisitCounter(){
+  const el=document.getElementById('s-visits');
+  if(!el)return;
+  try{
+    const res=await fetch('https://api.countapi.xyz/hit/game-of-numbers/sheets-practice-visits',{cache:'no-store'});
+    const data=await res.json();
+    if(typeof data.value!=='number')throw new Error('invalid counter response');
+    el.textContent=data.value.toLocaleString();
+  }catch(_){
+    const local=(Number(localStorage.getItem('gon_visits_local')||'0')||0)+1;
+    localStorage.setItem('gon_visits_local',String(local));
+    el.textContent=`${local.toLocaleString()}*`;
+    el.title='Local fallback counter (*): network unavailable';
+  }
+}
+
+function readProfileDb(){
+  try{return JSON.parse(localStorage.getItem(PROFILE_DB_KEY)||'{}');}
+  catch{return {};}
+}
+function writeProfileDb(db){
+  localStorage.setItem(PROFILE_DB_KEY,JSON.stringify(db));
+}
+function u8ToB64(u8){
+  let s='';
+  for(let i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);
+  return btoa(s);
+}
+function b64ToU8(b64){
+  const s=atob(b64);
+  const u8=new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++)u8[i]=s.charCodeAt(i);
+  return u8;
+}
+async function deriveProfileKey(secret,saltBytes){
+  const base=await crypto.subtle.importKey('raw',textEncoder.encode(secret),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2',salt:saltBytes,iterations:140000,hash:'SHA-256'},
+    base,
+    {name:'AES-GCM',length:256},
+    false,
+    ['encrypt','decrypt']
+  );
+}
+async function encryptProfileData(data,secret,saltB64){
+  const salt=saltB64?b64ToU8(saltB64):crypto.getRandomValues(new Uint8Array(16));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveProfileKey(secret,salt);
+  const payload=textEncoder.encode(JSON.stringify(data));
+  const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload);
+  return {salt:u8ToB64(salt),iv:u8ToB64(iv),cipher:u8ToB64(new Uint8Array(cipher)),updatedAt:Date.now()};
+}
+async function decryptProfileData(bundle,secret){
+  const salt=b64ToU8(bundle.salt);
+  const iv=b64ToU8(bundle.iv);
+  const cipher=b64ToU8(bundle.cipher);
+  const key=await deriveProfileKey(secret,salt);
+  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,cipher);
+  return JSON.parse(textDecoder.decode(new Uint8Array(plain)));
+}
+function makeNewProfile(name){
+  return {
+    name,
+    createdAt:Date.now(),
+    lastSeen:Date.now(),
+    totalChecks:0,
+    answers:{},
+    badges:['Fresh Quill']
+  };
+}
+function profileMetrics(data){
+  const entries=Object.values(data.answers||{});
+  const attempted=entries.length;
+  const solved=entries.filter(x=>x&&x.solved).length;
+  const totalChecks=data.totalChecks||entries.reduce((s,e)=>s+(e?.attempts||0),0);
+  const accuracy=attempted?Math.round((solved/attempted)*100):0;
+  return {attempted,solved,totalChecks,accuracy};
+}
+function profileBadges(metrics){
+  const badges=[];
+  if(metrics.attempted>=1)badges.push('Ink Starter');
+  if(metrics.solved>=10)badges.push('Ledger Knight');
+  if(metrics.solved>=25)badges.push('Formula Baron');
+  if(metrics.solved>=50)badges.push('Alchemist of Numbers');
+  if(metrics.solved>=80)badges.push('Grand Oracle');
+  if(metrics.accuracy>=90&&metrics.attempted>=20)badges.push('Precision Crown');
+  return badges.length?badges:['Fresh Quill'];
+}
+function profileRank(metrics){
+  if(metrics.solved>=80)return 'Archmage';
+  if(metrics.solved>=50)return 'Master Scholar';
+  if(metrics.solved>=25)return 'Senior Scribe';
+  if(metrics.solved>=10)return 'Court Analyst';
+  if(metrics.solved>=1)return 'Apprentice';
+  return 'New Recruit';
+}
+function updateProfileHud(){
+  const btn=document.getElementById('profileBtn');
+  const fun=document.getElementById('profileFun');
+  if(!btn||!fun)return;
+  if(!currentProfile){
+    btn.textContent='Profile Vault';
+    fun.textContent='Sign in to your private vault and track your progress like a royal ledger keeper.';
+    return;
+  }
+  const m=profileMetrics(currentProfile.data);
+  btn.textContent=`${currentProfile.name} • Vault`;
+  fun.textContent=`Captain ${currentProfile.name}, you solved ${m.solved}/${QUESTIONS.length} scrolls with ${m.accuracy}% accuracy. Rank: ${profileRank(m)}.`;
+}
+function hydrateFromCurrentProfile(){
+  resultState.clear();
+  stats.done=0;
+  stats.correct=0;
+  if(currentProfile&&currentProfile.data&&currentProfile.data.answers){
+    Object.keys(currentProfile.data.answers).forEach(qid=>{
+      const solved=!!currentProfile.data.answers[qid].solved;
+      resultState.set(Number(qid),solved);
+      stats.done++;
+      if(solved)stats.correct++;
+    });
+  }
+  updateStats();
+  renderAll();
+  updateProfileHud();
+}
+async function persistCurrentProfile(){
+  if(!currentProfile)return;
+  const db=readProfileDb();
+  const existing=db[currentProfile.name];
+  db[currentProfile.name]=await encryptProfileData(currentProfile.data,currentProfile.secret,existing?.salt);
+  writeProfileDb(db);
+}
+async function recordProfileAttempt(qid,formula,correct,output){
+  if(!currentProfile)return;
+  if(!currentProfile.data.answers)currentProfile.data.answers={};
+  const key=String(qid);
+  const prev=currentProfile.data.answers[key]||{attempts:0};
+  currentProfile.data.answers[key]={
+    attempts:(prev.attempts||0)+1,
+    solved:!!correct||!!prev.solved,
+    lastFormula:formula,
+    lastResult:output,
+    updatedAt:Date.now()
+  };
+  currentProfile.data.totalChecks=(currentProfile.data.totalChecks||0)+1;
+  currentProfile.data.lastSeen=Date.now();
+  const m=profileMetrics(currentProfile.data);
+  currentProfile.data.badges=profileBadges(m);
+  await persistCurrentProfile();
+  updateProfileHud();
+}
+function openProfile(){
+  renderProfileModal();
+  document.getElementById('profileModal').classList.add('open');
+}
+function closeProfile(){
+  document.getElementById('profileModal').classList.remove('open');
+}
+function renderProfileModal(){
+  const body=document.getElementById('profileBody');
+  if(!body)return;
+  if(!currentProfile){
+    body.innerHTML=`<div class="profile-panel"><h4>Enter The Vault</h4>
+      <form class="profile-form" onsubmit="event.preventDefault();profileAuth();">
+        <input id="profileName" placeholder="Choose profile name" maxlength="28" autocomplete="username">
+        <input id="profileSecret" placeholder="Secret phrase (used for encryption)" type="password" autocomplete="current-password">
+        <button class="btn btn-check" type="submit">Open Vault</button>
+      </form>
+      <div id="profileAuthMsg" class="profile-privacy">Your answers are encrypted locally in this browser. We do not upload your formulas.</div>
+    </div>`;
+    return;
+  }
+  const m=profileMetrics(currentProfile.data);
+  const badges=profileBadges(m);
+  body.innerHTML=`<div class="profile-panel">
+    <h4>Welcome, ${escapeHtml(currentProfile.name)}</h4>
+    <div class="profile-grid">
+      <div class="profile-chip"><strong>${m.solved}</strong> solved</div>
+      <div class="profile-chip"><strong>${m.attempted}</strong> attempted</div>
+      <div class="profile-chip"><strong>${m.accuracy}%</strong> accuracy</div>
+      <div class="profile-chip"><strong>${m.totalChecks}</strong> total checks</div>
+    </div>
+    <div class="profile-badges">${badges.map(b=>`<span class="profile-badge">${escapeHtml(b)}</span>`).join('')}</div>
+    <div class="profile-privacy">Privacy mode: your progress is encrypted with your secret phrase and stored in your browser only. No personal data leaves your device.</div>
+    <div class="btn-row">
+      <button class="btn" onclick="logoutProfile()">Lock Vault</button>
+      <button class="btn btn-check" onclick="switchProfile()">Use Another Profile</button>
+    </div>
+  </div>`;
+}
+async function profileAuth(){
+  const name=(document.getElementById('profileName')?.value||'').trim();
+  const secret=(document.getElementById('profileSecret')?.value||'').trim();
+  const msg=document.getElementById('profileAuthMsg');
+  if(!name||!secret){
+    if(msg)msg.textContent='Enter both profile name and secret phrase.';
+    return;
+  }
+  if(!window.crypto||!window.crypto.subtle){
+    if(msg)msg.textContent='This browser does not support secure encryption for profile vault.';
+    return;
+  }
+  const db=readProfileDb();
+  try{
+    let data;
+    if(db[name]){
+      data=await decryptProfileData(db[name],secret);
+    }else{
+      data=makeNewProfile(name);
+      db[name]=await encryptProfileData(data,secret);
+      writeProfileDb(db);
+    }
+    currentProfile={name,secret,data};
+    currentProfile.data.badges=profileBadges(profileMetrics(currentProfile.data));
+    await persistCurrentProfile();
+    hydrateFromCurrentProfile();
+    renderProfileModal();
+    showToast(`Vault opened for ${name}.`);
+  }catch(_){
+    if(msg)msg.textContent='Wrong secret phrase for this profile.';
+  }
+}
+function logoutProfile(){
+  currentProfile=null;
+  resultState.clear();
+  stats.done=0;
+  stats.correct=0;
+  updateStats();
+  renderAll();
+  updateProfileHud();
+  closeProfile();
+  showToast('Vault locked.');
+}
+function switchProfile(){
+  currentProfile=null;
+  resultState.clear();
+  stats.done=0;
+  stats.correct=0;
+  updateStats();
+  renderAll();
+  updateProfileHud();
+  renderProfileModal();
+}
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
@@ -1490,7 +2079,10 @@ function formatValueForUser(v){
   const theme=saved==='light'?'light':'dark';
   document.documentElement.setAttribute('data-theme',theme);
 })();
-document.getElementById('themeToggle').addEventListener('click',()=>{
+const themeToggleEl=document.getElementById('themeToggle');
+themeToggleEl.addEventListener('click',()=>{
+  themeToggleEl.classList.add('pulling');
+  setTimeout(()=>themeToggleEl.classList.remove('pulling'),220);
   const curr=document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
   const next=curr==='dark'?'light':'dark';
   document.documentElement.setAttribute('data-theme',next);
@@ -1512,7 +2104,9 @@ document.addEventListener('click',e=>{
 
 document.getElementById('s-total').textContent=String(QUESTIONS.length);
 updateStats();
+updateProfileHud();
 renderAll();
+initVisitCounter();
 
 // Inverted cursor (desktop): appears black on light and white on dark using mix-blend-mode:difference
 (function initCursor(){
